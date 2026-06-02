@@ -1,0 +1,27 @@
+# Build
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# Logs
+*.log
+
+# Config local
+appsettings.Development.json
+
+# Entity Framework
+Migrations/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
