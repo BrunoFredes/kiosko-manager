@@ -1,6 +1,57 @@
 @KioskoManager.API_HostAddress = http://localhost:5142
 
-GET {{KioskoManager.API_HostAddress}}/weatherforecast/
+###
+
+GET {{KioskoManager.API_HostAddress}}/api/categorias
 Accept: application/json
 
 ###
+
+POST {{KioskoManager.API_HostAddress}}/api/categorias
+Content-Type: application/json
+
+{
+  "nombreCategoria": "Congelados"
+}
+
+###
+
+GET {{KioskoManager.API_HostAddress}}/api/productos
+Accept: application/json
+
+###
+
+POST {{KioskoManager.API_HostAddress}}/api/productos
+Content-Type: application/json
+
+{
+  "nombreProducto": "Coca Cola 500ml",
+  "codigoBarras": "779089400001",
+  "precioCompra": 1200,
+  "precioVenta": 1800,
+  "stockActual": 50,
+  "stockMinimo": 10,
+  "idCategoria": 1
+}
+###
+
+GET {{KioskoManager.API_HostAddress}}/api/productos/1
+
+###
+
+PUT {{KioskoManager.API_HostAddress}}/api/productos/1
+Content-Type: application/json
+
+{
+  "nombreProducto": "Coca Cola 600ml",
+  "codigoBarras": "779089500001",
+  "precioCompra": 1500,
+  "precioVenta": 2500,
+  "stockActual": 40,
+  "stockMinimo": 10,
+  "idCategoria": 1
+}
+
+###
+
+DELETE {{KioskoManager.API_HostAddress}}/api/productos/1

@@ -1,13 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using KioskoManager.Infrastructure.Data;
+using KioskoManager.Application.Interfaces;
+using KioskoManager.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+// Swagger/OpenAPI
 builder.Services.AddOpenApi();
+
+// DbContext
 builder.Services.AddDbContext<KioskoDbContext>(
     options =>
         options.UseNpgsql(
@@ -16,6 +21,12 @@ builder.Services.AddDbContext<KioskoDbContext>(
             )
         )
 );
+
+// Repositories
+builder.Services.AddScoped<
+    IProductoRepository,
+    ProductoRepository
+>();
 
 var app = builder.Build();
 

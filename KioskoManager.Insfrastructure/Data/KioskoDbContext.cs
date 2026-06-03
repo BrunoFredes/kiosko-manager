@@ -43,10 +43,65 @@ namespace KioskoManager.Infrastructure.Data
                 entity.Property(e => e.FechaCreacionUsuario)
                     .HasColumnName("fecha_creacion_usuario");
             });
+            modelBuilder.Entity<Categoria>(entity =>
+            {
+                entity.ToTable("Categorias");
+
+                entity.HasKey(e => e.IdCategoria);
+
+                entity.Property(e => e.IdCategoria)
+                    .HasColumnName("id_categorias");
+
+                entity.Property(e => e.NombreCategoria)
+                    .HasColumnName("nombre_categoria");
+            });
 
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Producto>(entity =>
+            {
+                entity.ToTable("Productos");
+
+                entity.HasKey(e => e.IdProducto);
+
+                entity.Property(e => e.IdProducto)
+                    .HasColumnName("id_producto");
+
+                entity.Property(e => e.NombreProducto)
+                    .HasColumnName("nombre_producto");
+
+                entity.Property(e => e.CodigoBarras)
+                    .HasColumnName("codigo_barras");
+
+                entity.Property(e => e.PrecioCompra)
+                    .HasColumnName("precio_compra");
+
+                entity.Property(e => e.PrecioVenta)
+                    .HasColumnName("precio_venta");
+
+                entity.Property(e => e.StockActual)
+                    .HasColumnName("stock_actual");
+
+                entity.Property(e => e.StockMinimo)
+                    .HasColumnName("stock_minimo");
+
+                entity.Property(e => e.Activo)
+                    .HasColumnName("activo");
+
+                entity.Property(e => e.FechaCreacion)
+                    .HasColumnName("fecha_creacion");
+
+                entity.Property(e => e.IdCategoria)
+                    .HasColumnName("id_categoria");
+
+                entity.HasOne(e => e.Categoria)
+                    .WithMany(c => c.Productos)
+                    .HasForeignKey(e => e.IdCategoria);
+            });
         }
 
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Categoria> Categorias { get; set; }
+
+        public DbSet<Producto> Productos { get; set; }
     }
 }

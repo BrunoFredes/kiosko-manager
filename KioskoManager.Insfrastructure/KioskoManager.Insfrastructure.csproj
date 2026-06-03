@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\KioskoManager.Application\KioskoManager.Application.csproj" />
     <ProjectReference Include="..\KioskoManager.Domain\KioskoManager.Domain.csproj" />
   </ItemGroup>
 
