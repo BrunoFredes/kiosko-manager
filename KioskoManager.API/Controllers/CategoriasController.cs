@@ -1,8 +1,6 @@
-﻿using KioskoManager.Application.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using KioskoManager.Application.Interfaces;
 using KioskoManager.Domain.Entities;
-using KioskoManager.Infrastructure.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace KioskoManager.API.Controllers;
 
@@ -10,61 +8,87 @@ namespace KioskoManager.API.Controllers;
 [Route("api/[controller]")]
 public class CategoriasController : ControllerBase
 {
-    private readonly KioskoDbContext _context;
+    private readonly ICategoriaRepository _categoriaRepository;
 
     public CategoriasController(
-        KioskoDbContext context
+        ICategoriaRepository categoriaRepository
     )
     {
-        _context = context;
+        _categoriaRepository = categoriaRepository;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCategorias()
+    public async Task<IActionResult> GetAll()
     {
-        var categorias = await _context.Categorias.ToListAsync();
+        var categorias =
+            await _categoriaRepository.GetAllAsync();
 
         return Ok(categorias);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CrearCategoria(
-        CreateCategoriaDto dto
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(
+        long id
     )
     {
-        if (string.IsNullOrWhiteSpace(dto.NombreCategoria))
+        var categoria =
+            await _categoriaRepository.GetByIdAsync(id);
+
+        if (categoria == null)
         {
-            return BadRequest(
-                "El nombre de la categoría es obligatorio."
-            );
+            return NotFound();
         }
 
-        var categoriaExistente =
-            await _context.Categorias.AnyAsync(
-                c => c.NombreCategoria.ToLower() ==
-                     dto.NombreCategoria.ToLower()
-            );
+        return Ok(categoria);
+    }
 
-        if (categoriaExistente)
-        {
-            return BadRequest(
-                "La categoría ya existe."
-            );
-        }
-
-        var categoria = new Categoria
-        {
-            NombreCategoria = dto.NombreCategoria
-        };
-
-        _context.Categorias.Add(categoria);
-
-        await _context.SaveChangesAsync();
+    [HttpPost]
+    public async Task<IActionResult> Create(
+        Categoria categoria
+    )
+    {
+        var nuevaCategoria =
+            await _categoriaRepository.CreateAsync(categoria);
 
         return CreatedAtAction(
-            nameof(GetCategorias),
-            new { id = categoria.IdCategoria },
-            categoria
+            nameof(GetById),
+            new { id = nuevaCategoria.IdCategoria },
+            nuevaCategoria
         );
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(
+        long id,
+        Categoria categoria
+    )
+    {
+        categoria.IdCategoria = id;
+
+        var categoriaActualizada =
+            await _categoriaRepository.UpdateAsync(categoria);
+
+        if (categoriaActualizada == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(categoriaActualizada);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(
+        long id
+    )
+    {
+        var eliminado =
+            await _categoriaRepository.DeleteAsync(id);
+
+        if (!eliminado)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }

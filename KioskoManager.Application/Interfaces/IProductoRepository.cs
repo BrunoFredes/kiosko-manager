@@ -13,4 +13,6 @@ public interface IProductoRepository
     Task<Producto?> UpdateAsync(Producto producto);
 
     Task<bool> SoftDeleteAsync(long id);
+
+    
 }

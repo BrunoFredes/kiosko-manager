@@ -28,6 +28,16 @@ builder.Services.AddScoped<
     ProductoRepository
 >();
 
+builder.Services.AddScoped<
+    ICategoriaRepository,
+    CategoriaRepository
+>();
+
+builder.Services.AddScoped<
+    IUsuarioRepository,
+    UsuarioRepository
+>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -55,3 +55,56 @@ Content-Type: application/json
 ###
 
 DELETE {{KioskoManager.API_HostAddress}}/api/productos/1
+
+  ### Usuarios
+
+GET {{KioskoManager.API_HostAddress}}/api/usuarios
+
+###
+
+GET {{KioskoManager.API_HostAddress}}/api/usuarios/1
+
+###
+
+POST {{KioskoManager.API_HostAddress}}/api/usuarios
+Content-Type: application/json
+
+{
+  "nombreUsuario": "Admin",
+  "apellidoUsuario": "Sistema",
+  "emailUsuario": "admin",
+  "passwordHash": "admin",
+  "rolUsuario": "DUENIO",
+  "activoUsuario": true
+}
+
+###
+
+PUT {{KioskoManager.API_HostAddress}}/api/usuarios/1
+Content-Type: application/json
+
+{
+  "nombreUsuario": "Admin",
+  "apellidoUsuario": "Modificado",
+  "emailUsuario": "admin",
+  "passwordHash": "admin",
+  "rolUsuario": "DUENIO",
+  "activoUsuario": true
+}
+
+###
+
+DELETE {{KioskoManager.API_HostAddress}}/api/usuarios/1
+
+
+
+
+### LOGIN
+
+POST {{KioskoManager.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin",
+  "password": "admin"
+}
