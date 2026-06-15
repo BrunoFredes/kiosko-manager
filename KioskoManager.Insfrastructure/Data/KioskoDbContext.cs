@@ -97,11 +97,70 @@ namespace KioskoManager.Infrastructure.Data
                     .WithMany(c => c.Productos)
                     .HasForeignKey(e => e.IdCategoria);
             });
+            modelBuilder.Entity<Venta>(entity =>
+            {
+                entity.ToTable("Ventas");
+
+                entity.HasKey(e => e.IdVenta);
+
+                entity.Property(e => e.IdVenta)
+                    .HasColumnName("id_venta");
+
+                entity.Property(e => e.FechaVenta)
+                    .HasColumnName("fecha_venta");
+
+                entity.Property(e => e.TotalVenta)
+                    .HasColumnName("total_venta");
+
+                entity.Property(e => e.IdUsuario)
+                    .HasColumnName("id_usuario");
+
+                entity.HasOne(e => e.Usuario)
+                    .WithMany(u => u.Ventas)
+                    .HasForeignKey(e => e.IdUsuario);
+            });
+
+            modelBuilder.Entity<DetalleVenta>(entity =>
+            {
+                entity.ToTable("Detalle_Venta");
+
+                entity.HasKey(e => e.IdDetalle);
+
+                entity.Property(e => e.IdDetalle)
+                    .HasColumnName("id_detalle");
+
+                entity.Property(e => e.IdVenta)
+                    .HasColumnName("id_venta");
+
+                entity.Property(e => e.IdProducto)
+                    .HasColumnName("id_producto");
+
+                entity.Property(e => e.Cantidad)
+                    .HasColumnName("cantidad");
+
+                entity.Property(e => e.PrecioUnitario)
+                    .HasColumnName("precio_unitario");
+
+                entity.Property(e => e.Subtotal)
+                    .HasColumnName("subtotal");
+
+                entity.HasOne(e => e.Venta)
+                    .WithMany(v => v.Detalles)
+                    .HasForeignKey(e => e.IdVenta);
+
+                entity.HasOne(e => e.Producto)
+                    .WithMany(p => p.DetallesVenta)
+                    .HasForeignKey(e => e.IdProducto);
+            });
         }
 
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
 
         public DbSet<Producto> Productos { get; set; }
+
+        public DbSet<Venta> Ventas { get; set; }
+
+        public DbSet<DetalleVenta> DetalleVenta { get; set; }
     }
 }

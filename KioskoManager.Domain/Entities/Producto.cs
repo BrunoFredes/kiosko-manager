@@ -28,4 +28,9 @@ public class Producto
 
     [JsonIgnore]
     public Categoria? Categoria { get; set; }
+
+    public ICollection<DetalleVenta>
+    DetallesVenta
+    { get; set; }
+    = new List<DetalleVenta>();
 }

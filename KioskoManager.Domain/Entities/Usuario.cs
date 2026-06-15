@@ -21,5 +21,10 @@ namespace KioskoManager.Domain.Entities
         public bool ActivoUsuario { get; set; }
 
         public DateTime FechaCreacionUsuario { get; set; }
+
+        public ICollection<Venta>
+            Ventas  
+                { get; set; }
+            = new List<Venta>();
     }
 }
