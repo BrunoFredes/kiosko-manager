@@ -108,3 +108,19 @@ Content-Type: application/json
   "email": "admin",
   "password": "admin"
 }
+
+
+### VENTAS  
+
+POST {{KioskoManager.API_HostAddress}}/api/ventas
+Content-Type: application/json
+
+{
+  "idUsuario": 2,
+  "detalles": [
+    {
+      "idProducto": 1,
+      "cantidad": 2
+    }
+  ]
+}

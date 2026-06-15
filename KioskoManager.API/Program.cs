@@ -34,6 +34,11 @@ builder.Services.AddScoped<
 >();
 
 builder.Services.AddScoped<
+    IVentaRepository,
+    VentaRepository
+>();
+
+builder.Services.AddScoped<
     IUsuarioRepository,
     UsuarioRepository
 >();
