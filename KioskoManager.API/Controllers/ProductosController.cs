@@ -151,17 +151,6 @@ public class ProductosController : ControllerBase
             "Producto desactivado correctamente."
         );
     }
-    [HttpGet("buscar")]
-        public async Task<ActionResult<List<Producto>>>
-    Buscar([FromQuery] string texto)
-        {
-            var productos =
-                await _productoRepository
-                    .BuscarAsync(texto);
-
-            return Ok(productos);
-        }
-
     [HttpGet("stock-bajo")]
         public async Task<ActionResult<List<Producto>>>
     ObtenerStockBajo()
@@ -172,4 +161,34 @@ public class ProductosController : ControllerBase
 
             return Ok(productos);
         }
+    [HttpGet("buscar")]
+    public async Task<ActionResult<List<Producto>>>
+    Buscar(
+        string texto)
+    {
+        var productos =
+            await _productoRepository
+                .BuscarAsync(texto);
+
+        return Ok(productos);
+    }
+    [HttpGet("codigo/{codigo}")]
+    public async Task<ActionResult<Producto>>
+    BuscarPorCodigo(
+        string codigo)
+    {
+        var producto =
+            await _context.Productos
+                .FirstOrDefaultAsync(
+                    p =>
+                        p.CodigoBarras ==
+                        codigo);
+
+        if (producto == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(producto);
+    }
 }

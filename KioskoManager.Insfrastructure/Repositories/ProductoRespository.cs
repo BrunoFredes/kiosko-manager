@@ -87,19 +87,6 @@ public class ProductoRepository : IProductoRepository
 
         return true;
     }
-    public async Task<List<Producto>> BuscarAsync(string texto)
-    {
-        texto = texto.ToLower();
-
-        return await _context.Productos
-            .Where(p =>
-                p.NombreProducto.ToLower().Contains(texto)
-                ||
-                (p.CodigoBarras != null &&
-                 p.CodigoBarras.Contains(texto))
-            )
-            .ToListAsync();
-    }
 
     public async Task<List<Producto>> ObtenerStockBajoAsync()
     {
@@ -109,6 +96,25 @@ public class ProductoRepository : IProductoRepository
                 p.StockActual <= p.StockMinimo
             )
             .OrderBy(p => p.StockActual)
+            .ToListAsync();
+    }
+    public async Task<List<Producto>>
+
+BuscarAsync(string texto)
+    {
+        texto = texto.ToLower();
+
+        return await _context.Productos
+            .Where(p =>
+                p.Activo &&
+                (
+                    p.NombreProducto
+                        .ToLower()
+                        .Contains(texto)
+                    ||
+                    p.CodigoBarras!
+                        .Contains(texto)
+                ))
             .ToListAsync();
     }
 }

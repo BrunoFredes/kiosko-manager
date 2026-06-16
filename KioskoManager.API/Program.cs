@@ -47,6 +47,11 @@ builder.Services.AddScoped<
     IMovimientoStockRepository,
     MovimientoStockRepository>();
 
+builder.Services.AddScoped<
+    IDashboardRepository,
+    DashboardRepository>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

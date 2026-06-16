@@ -141,3 +141,61 @@ Accept: application/json
 
 GET {{KioskoManager.API_HostAddress}}/api/productos/stock-bajo
 Accept: application/json
+
+
+
+### DASHBOARD - TOP PRODUCTOS
+
+GET {{KioskoManager.API_HostAddress}}/api/dashboard/top-productos
+Accept: application/json
+
+###
+
+###
+
+
+
+
+
+
+
+### BUSCAR PRODUCTO
+GET {{KioskoManager.API_HostAddress}}/api/productos/buscar?texto=coca
+
+###
+
+### BUSCAR POR CÓDIGO
+GET {{KioskoManager.API_HostAddress}}/api/productos/codigo/779089500001
+
+
+### RESUMEN DIA 
+
+GET {{KioskoManager.API_HostAddress}}/api/dashboard/resumen-dia
+
+### RESUMEN SEMANA
+
+GET {{KioskoManager.API_HostAddress}}/api/dashboard/resumen-semana
+
+### RESUMEN MES
+
+GET {{KioskoManager.API_HostAddress}}/api/dashboard/resumen-mes
+
+### RESUMEN AÑO
+
+GET {{KioskoManager.API_HostAddress}}/api/dashboard/resumen-anio
+
+###TOP PRODUCTOS
+
+GET {{KioskoManager.API_HostAddress}}/api/dashboard/top-productos
+
+### TOP PRODUCTO SEMANA
+
+GET {{KioskoManager.API_HostAddress}}/api/dashboard/top-productos-semana
+
+### TOP PRODUCTO MES
+
+GET {{KioskoManager.API_HostAddress}}/api/dashboard/top-productos-mes
+
+###TOP PRODUCTO AÑO
+
+GET {{KioskoManager.API_HostAddress}}/api/dashboard/top-productos-anio
