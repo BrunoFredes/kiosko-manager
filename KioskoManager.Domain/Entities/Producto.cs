@@ -28,9 +28,18 @@ public class Producto
 
     [JsonIgnore]
     public Categoria? Categoria { get; set; }
-
+    
+    
+    [JsonIgnore]
     public ICollection<DetalleVenta>
     DetallesVenta
     { get; set; }
     = new List<DetalleVenta>();
+
+
+    [JsonIgnore]
+    public ICollection<MovimientoStock>
+    MovimientosStock
+    { get; set; }
+    = new List<MovimientoStock>();
 }

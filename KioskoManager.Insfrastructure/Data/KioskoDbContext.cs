@@ -152,6 +152,47 @@ namespace KioskoManager.Infrastructure.Data
                     .WithMany(p => p.DetallesVenta)
                     .HasForeignKey(e => e.IdProducto);
             });
+            modelBuilder.Entity<MovimientoStock>(entity =>
+            {
+                entity.ToTable("Movimientos_Stock");
+
+                entity.HasKey(e => e.IdMovimientoStock);
+
+                entity.Property(e => e.IdMovimientoStock)
+                    .HasColumnName("id_movimiento_stock");
+
+                entity.Property(e => e.IdProducto)
+                    .HasColumnName("id_producto");
+
+                entity.Property(e => e.IdUsuario)
+                    .HasColumnName("id_usuario");
+
+                entity.Property(e => e.TipoMovimiento)
+                    .HasColumnName("tipo_movimiento");
+
+                entity.Property(e => e.Cantidad)
+                    .HasColumnName("cantidad");
+
+                entity.Property(e => e.StockAnterior)
+                    .HasColumnName("stock_anterior");
+
+                entity.Property(e => e.StockNuevo)
+                    .HasColumnName("stock_nuevo");
+
+                entity.Property(e => e.Observacion)
+                    .HasColumnName("observacion");
+
+                entity.Property(e => e.FechaMovimiento)
+                    .HasColumnName("fecha_movimiento");
+
+                entity.HasOne(e => e.Producto)
+                    .WithMany(p => p.MovimientosStock)
+                    .HasForeignKey(e => e.IdProducto);
+
+                entity.HasOne(e => e.Usuario)
+                    .WithMany(u => u.MovimientosStock)
+                    .HasForeignKey(e => e.IdUsuario);
+            });
         }
 
         public DbSet<Usuario> Usuarios { get; set; }
@@ -162,5 +203,9 @@ namespace KioskoManager.Infrastructure.Data
         public DbSet<Venta> Ventas { get; set; }
 
         public DbSet<DetalleVenta> DetalleVenta { get; set; }
+
+        public DbSet<MovimientoStock>
+            MovimientosStock
+                { get; set; }
     }
 }

@@ -99,8 +99,43 @@ public class VentaRepository
                              detalle.IdProducto
                     );
 
+            var stockAnterior =
+    producto.StockActual;
+
             producto.StockActual -=
                 detalle.Cantidad;
+
+            var movimiento =
+                new MovimientoStock
+                {
+                    IdProducto =
+                        producto.IdProducto,
+
+                    IdUsuario =
+                        ventaDto.IdUsuario,
+
+                    TipoMovimiento =
+                        "VENTA",
+
+                    Cantidad =
+                        detalle.Cantidad,
+
+                    StockAnterior =
+                        stockAnterior,
+
+                    StockNuevo =
+                        producto.StockActual,
+
+                    Observacion =
+                        $"Venta #{venta.IdVenta}",
+
+                    FechaMovimiento =
+                        DateTime.UtcNow
+                };
+
+            _context.MovimientosStock.Add(
+                movimiento
+            );
         }
 
         await _context.SaveChangesAsync();

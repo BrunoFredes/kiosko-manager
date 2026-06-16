@@ -14,5 +14,8 @@ public interface IProductoRepository
 
     Task<bool> SoftDeleteAsync(long id);
 
-    
+
+    Task<List<Producto>> BuscarAsync(string texto);
+
+    Task<List<Producto>> ObtenerStockBajoAsync();
 }

@@ -124,3 +124,20 @@ Content-Type: application/json
     }
   ]
 }
+
+### MOVIMIENTOS STOCK
+
+GET {{KioskoManager.API_HostAddress}}/api/movimientosstock
+Accept: application/json
+
+
+### Buscar producto
+
+GET {{KioskoManager.API_HostAddress}}/api/productos/buscar?texto=779089500001
+Accept: application/json
+
+
+### Productos con stock bajo
+
+GET {{KioskoManager.API_HostAddress}}/api/productos/stock-bajo
+Accept: application/json

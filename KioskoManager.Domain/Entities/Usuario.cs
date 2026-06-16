@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace KioskoManager.Domain.Entities
 {
@@ -14,6 +15,7 @@ namespace KioskoManager.Domain.Entities
 
         public string EmailUsuario { get; set; } = string.Empty;
 
+        [JsonIgnore]
         public string PasswordHash { get; set; } = string.Empty;
 
         public string RolUsuario { get; set; } = string.Empty;
@@ -22,9 +24,12 @@ namespace KioskoManager.Domain.Entities
 
         public DateTime FechaCreacionUsuario { get; set; }
 
-        public ICollection<Venta>
-            Ventas  
-                { get; set; }
+        [JsonIgnore]
+        public ICollection<Venta> Ventas { get; set; }
             = new List<Venta>();
+
+        [JsonIgnore]
+        public ICollection<MovimientoStock> MovimientosStock { get; set; }
+            = new List<MovimientoStock>();
     }
 }

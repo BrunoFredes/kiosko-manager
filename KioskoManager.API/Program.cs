@@ -43,6 +43,10 @@ builder.Services.AddScoped<
     UsuarioRepository
 >();
 
+builder.Services.AddScoped<
+    IMovimientoStockRepository,
+    MovimientoStockRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
