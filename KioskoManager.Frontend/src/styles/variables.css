@@ -1,0 +1,23 @@
+:root{
+
+    --sidebar:#1E293B;
+
+    --sidebar-hover:#334155;
+
+    --background:#F5F7FA;
+
+    --card:#FFFFFF;
+
+    --primary:#2563EB;
+
+    --primary-hover:#3B82F6;
+
+    --text:#0F172A;
+
+    --text-light:#64748B;
+
+    --border:#E2E8F0;
+
+    --shadow:0 8px 24px rgba(0,0,0,.08);
+
+}

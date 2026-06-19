@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using KioskoManager.Application.DTOs;
 using KioskoManager.Application.Interfaces;
 using KioskoManager.Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KioskoManager.API.Controllers;
 
@@ -90,5 +91,30 @@ public class UsuariosController : ControllerBase
         }
 
         return NoContent();
+    }
+    [HttpPut("cambiar-password")]
+    public async Task<IActionResult>
+CambiarPassword(
+    CambiarPasswordDto dto)
+    {
+        Console.WriteLine("Entró al endpoint");
+
+        var resultado =
+            await _usuarioRepository
+                .CambiarPasswordAsync(
+                    dto.IdUsuario,
+                    dto.PasswordActual,
+                    dto.PasswordNueva);
+
+        Console.WriteLine($"Resultado: {resultado}");
+
+        if (!resultado)
+        {
+            return BadRequest(
+                "Contraseña actual incorrecta");
+        }
+
+        return Ok(
+            "Contraseña actualizada");
     }
 }

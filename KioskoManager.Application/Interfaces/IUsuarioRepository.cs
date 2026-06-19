@@ -15,4 +15,10 @@ public interface IUsuarioRepository
     Task<Usuario?> UpdateAsync(Usuario usuario);
 
     Task<bool> DeleteAsync(long id);
+
+    Task<bool> CambiarPasswordAsync(
+    long idUsuario,
+    string passwordActual,
+    string passwordNueva
+);
 }

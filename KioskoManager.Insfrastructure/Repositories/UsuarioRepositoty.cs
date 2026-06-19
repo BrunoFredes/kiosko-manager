@@ -17,9 +17,11 @@ public class UsuarioRepository
         _context = context;
     }
 
-    public async Task<List<Usuario>> GetAllAsync()
+    public async Task<List<Usuario>>
+       GetAllAsync()
     {
         return await _context.Usuarios
+            .Where(u => u.ActivoUsuario)
             .ToListAsync();
     }
 
@@ -91,21 +93,45 @@ public class UsuarioRepository
     }
 
     public async Task<bool> DeleteAsync(
-        long id
-    )
+     long id)
     {
         var usuario =
             await _context.Usuarios
                 .FirstOrDefaultAsync(
-                    u => u.IdUsuario == id
-                );
+                    u => u.IdUsuario == id);
 
         if (usuario == null)
         {
             return false;
         }
 
-        _context.Usuarios.Remove(usuario);
+        usuario.ActivoUsuario =
+            false;
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+    public async Task<bool> CambiarPasswordAsync(
+    long idUsuario,
+    string passwordActual,
+    string passwordNueva)
+    {
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(
+                u => u.IdUsuario == idUsuario);
+
+        if (usuario == null)
+        {
+            return false;
+        }
+
+        if (usuario.PasswordHash != passwordActual)
+        {
+            return false;
+        }
+
+        usuario.PasswordHash = passwordNueva;
 
         await _context.SaveChangesAsync();
 

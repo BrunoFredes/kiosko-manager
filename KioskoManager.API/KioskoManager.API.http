@@ -62,7 +62,7 @@ GET {{KioskoManager.API_HostAddress}}/api/usuarios
 
 ###
 
-GET {{KioskoManager.API_HostAddress}}/api/usuarios/1
+GET {{KioskoManager.API_HostAddress}}/api/usuarios/2
 
 ###
 
@@ -199,3 +199,25 @@ GET {{KioskoManager.API_HostAddress}}/api/dashboard/top-productos-mes
 ###TOP PRODUCTO AÑO
 
 GET {{KioskoManager.API_HostAddress}}/api/dashboard/top-productos-anio
+
+
+
+### Cambiar contraseña
+PUT {{KioskoManager.API_HostAddress}}/api/usuarios/cambiar-password
+Content-Type: application/json
+
+{
+  "idUsuario": 2,
+  "passwordActual": "123",
+  "passwordNueva": "456"
+}
+
+### REGISTRO
+
+POST{{KioskoManager.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "prueba@gmail.com",
+  "password": "456"
+}

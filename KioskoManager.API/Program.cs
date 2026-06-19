@@ -5,12 +5,23 @@ using KioskoManager.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Controllers
 builder.Services.AddControllers();
 
 // Swagger/OpenAPI
 builder.Services.AddOpenApi();
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactPolicy", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // DbContext
 builder.Services.AddDbContext<KioskoDbContext>(
@@ -23,44 +34,25 @@ builder.Services.AddDbContext<KioskoDbContext>(
 );
 
 // Repositories
-builder.Services.AddScoped<
-    IProductoRepository,
-    ProductoRepository
->();
-
-builder.Services.AddScoped<
-    ICategoriaRepository,
-    CategoriaRepository
->();
-
-builder.Services.AddScoped<
-    IVentaRepository,
-    VentaRepository
->();
-
-builder.Services.AddScoped<
-    IUsuarioRepository,
-    UsuarioRepository
->();
-
-builder.Services.AddScoped<
-    IMovimientoStockRepository,
-    MovimientoStockRepository>();
-
-builder.Services.AddScoped<
-    IDashboardRepository,
-    DashboardRepository>();
-
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped<IVentaRepository, VentaRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IMovimientoStockRepository, MovimientoStockRepository>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
+
+// ← IMPORTANTE
+app.UseCors("ReactPolicy");
 
 app.UseAuthorization();
 

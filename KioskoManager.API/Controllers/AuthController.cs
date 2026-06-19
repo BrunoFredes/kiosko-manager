@@ -21,38 +21,32 @@ public class AuthController : ControllerBase
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(
-        LoginRequestDto request
-    )
+    LoginRequestDto request
+)
     {
+        Console.WriteLine("ENTRO AL LOGIN");
+
         var usuario =
             await _usuarioRepository
-                .GetByEmailAsync(
-                    request.Email
-                );
+                .GetByEmailAsync(request.Email);
+
+        Console.WriteLine("PASO BUSQUEDA");
 
         if (usuario == null)
         {
-            return Unauthorized(
-                "Usuario no encontrado"
-            );
+            Console.WriteLine("USUARIO NULL");
+            return Unauthorized();
         }
 
-        if (
-            usuario.PasswordHash !=
-            request.Password
-        )
+        Console.WriteLine("USUARIO ENCONTRADO");
+
+        if (usuario.PasswordHash != request.Password)
         {
-            return Unauthorized(
-                "Contraseña incorrecta"
-            );
+            Console.WriteLine("PASSWORD INCORRECTA");
+            return Unauthorized();
         }
 
-        if (!usuario.ActivoUsuario)
-        {
-            return Unauthorized(
-                "Usuario inactivo"
-            );
-        }
+        Console.WriteLine("ANTES DEL RETURN");
 
         return Ok(
             new
