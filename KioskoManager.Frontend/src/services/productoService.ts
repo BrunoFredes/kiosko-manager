@@ -15,3 +15,13 @@ export async function buscarPorCodigo(codigo: string) {
     return await response.json();
 
 }
+export async function buscarProductos(texto:string){
+
+    const response =
+        await fetch(
+            `${API}/Productos/buscar?texto=${texto}`
+        );
+
+    return await response.json();
+
+}

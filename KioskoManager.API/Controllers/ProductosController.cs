@@ -191,4 +191,21 @@ public class ProductosController : ControllerBase
 
         return Ok(producto);
     }
+    [HttpGet("buscar")]
+    public async Task<ActionResult<List<Producto>>>
+BuscarPorNombre(
+    string texto)
+    {
+        var productos =
+            await _context.Productos
+                .Where(p =>
+                    p.Activo &&
+                    p.NombreProducto.ToLower()
+                        .Contains(texto.ToLower()))
+                .OrderBy(p => p.NombreProducto)
+                .Take(20)
+                .ToListAsync();
+
+        return Ok(productos);
+    }
 }
