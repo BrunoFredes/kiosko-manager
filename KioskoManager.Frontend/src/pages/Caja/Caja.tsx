@@ -5,6 +5,7 @@ import {
     buscarPorCategoria,
     obtenerTodosProductos
 } from "../../services/productoService";
+import ConfirmarVentaModal from "../../components/venta/ConfirmarVentaModal";
 
 import "./Caja.css";
 import { obtenerCategorias } from "../../services/categoriaService";
@@ -15,6 +16,7 @@ interface Producto {
     nombreProducto: string;
     precioVenta: number;
     codigoBarras: string;
+    stockActual: number;
 
 }
 
@@ -29,8 +31,12 @@ function Caja() {
 
     const [codigo, setCodigo] = useState("");
 
+    const [mostrarModal, setMostrarModal] =
+    useState(false);
+
     const [categorias, setCategorias] =
         useState<any[]>([]);
+
 
     const [categoriaSeleccionada,
         setCategoriaSeleccionada] =
@@ -54,6 +60,36 @@ function Caja() {
             .catch(console.error);
 
     }, []);
+    function confirmarVenta(
+
+    metodoPago: string,
+
+    recibido: number
+
+){
+
+    console.log({
+
+        carrito,
+
+        metodoPago,
+
+        recibido
+
+    });
+
+    setMostrarModal(false);
+
+}
+    function vaciarVenta(){
+
+        if(window.confirm("¿Vaciar la venta actual?")){
+
+            setCarrito([]);
+
+        }
+
+    }
 
     useEffect(() => {
 
@@ -94,50 +130,49 @@ function Caja() {
     }, [categoriaSeleccionada]);
     function agregarProducto(producto: Producto) {
 
-        setCarrito((carritoActual) => {
+    setCarrito((carritoActual) => {
 
-            const existente =
-                carritoActual.find(
+        const existente = carritoActual.find(
+            item => item.producto.idProducto === producto.idProducto
+        );
 
-                    item =>
-                        item.producto.idProducto ===
-                        producto.idProducto
+        if (existente) {
 
-                );
+            if (existente.cantidad >= producto.stockActual) {
 
-            if (existente) {
-
-                return carritoActual.map(item =>
-
-                    item.producto.idProducto ===
-                    producto.idProducto
-
-                        ? {
-                            ...item,
-                            cantidad:
-                                item.cantidad + 1
-                        }
-
-                        : item
-
-                );
+                return carritoActual;
 
             }
 
-            return [
+            return carritoActual.map(item =>
 
-                ...carritoActual,
+                item.producto.idProducto === producto.idProducto
 
-                {
-                    producto,
-                    cantidad: 1
-                }
+                    ? {
+                        ...item,
+                        cantidad: item.cantidad + 1
+                    }
 
-            ];
+                    : item
 
-        });
+            );
 
-    }
+        }
+
+        return [
+
+            ...carritoActual,
+
+            {
+                producto,
+                cantidad: 1
+            }
+
+        ];
+
+    });
+
+}
 
     async function handleBuscar(
         e: React.KeyboardEvent<HTMLInputElement>
@@ -164,24 +199,32 @@ function Caja() {
 
     }
 
-    function eliminarProducto(
-        idProducto: number
-    ) {
+    function eliminarProducto(idProducto: number) {
 
-        setCarrito(
+    setCarrito((carritoActual) =>
 
-            carrito.filter(
+        carritoActual.flatMap(item => {
 
-                item =>
+            if (item.producto.idProducto !== idProducto)
+                return item;
 
-                    item.producto.idProducto !==
-                    idProducto
+            if (item.cantidad > 1) {
 
-            )
+                return {
+                    ...item,
+                    cantidad: item.cantidad - 1
+                };
 
-        );
+            }
 
-    }
+            return [];
+
+        })
+
+    );
+    
+
+}
 
     const total =
         carrito.reduce(
@@ -195,8 +238,9 @@ function Caja() {
                 item.cantidad,
 
             0
-
-        );
+            
+    );
+    
 
     return (
 
@@ -302,7 +346,7 @@ function Caja() {
 
                                     key={producto.idProducto}
 
-                                    className="producto-busqueda"
+                                    className="producto-card"
 
                                 >
 
@@ -321,19 +365,32 @@ function Caja() {
                                         {producto.precioVenta}
 
                                     </div>
+                                    <div
 
+                                        className={
+                                            producto.stockActual < 10
+
+                                                ? "producto-stock stock-peligro"
+
+                                                : "producto-stock"
+                                        }
+
+                                    >
+
+                                        Stock: {producto.stockActual}
+
+                                    </div>
                                     <button
 
                                         className="btn btn-success"
 
+
+                                        
                                         onClick={() => {
 
                                             agregarProducto(producto);
 
-                                            setTextoBusqueda("");
-
-                                            setProductosEncontrados([]);
-
+                                            
                                         }}
 
                                     >
@@ -357,10 +414,12 @@ function Caja() {
             <div className="venta-panel">
 
                 <h2>Venta actual</h2>
-
+                <div className="lista-carrito">
                 {
 
                     carrito.map(item => (
+
+                        
 
                         <div
 
@@ -370,7 +429,7 @@ function Caja() {
 
                         >
 
-                            <div>
+                            <div className="venta-info">
 
                                 <strong>
 
@@ -378,13 +437,61 @@ function Caja() {
 
                                 </strong>
 
-                                <br />
+                                <div className="precio-unitario">
 
-                                x{item.cantidad}
+                                    ${item.producto.precioVenta} c/u
+
+                                </div>
+
+                                <div className="cantidad-control">
+
+                                    <button
+
+                                        className="btn-cantidad"
+
+                                        onClick={() =>
+                                            eliminarProducto(
+                                                item.producto.idProducto
+                                            )
+                                        }
+
+                                    >
+
+                                        -
+
+                                    </button>
+
+                                    <span>
+
+                                        {item.cantidad}
+
+                                    </span>
+
+                                    <button
+
+                                        className="btn-cantidad"
+
+                                        onClick={() =>
+                                            agregarProducto(
+                                                item.producto
+                                            )
+                                        }
+
+                                    >
+
+                                        +
+
+                                    </button>
+
+                                </div>
 
                             </div>
+                            
 
-                            <div>
+                            
+
+
+                            <div className="venta-precio">
 
                                 $
 
@@ -398,30 +505,12 @@ function Caja() {
 
                             </div>
 
-                            <button
-
-                                onClick={() =>
-
-                                    eliminarProducto(
-
-                                        item.producto.idProducto
-
-                                    )
-
-                                }
-
-                            >
-
-                                ❌
-
-                            </button>
-
                         </div>
 
                     ))
-
+                        
                 }
-
+                </div>
                 <hr />
 
                 <h2>
@@ -429,19 +518,56 @@ function Caja() {
                     Total: ${total}
 
                 </h2>
+                
+                <div className="d-grid gap-2 mt-4">
 
-                <button
-                    className="btn-confirmar"
-                >
+                    <button
 
-                    Confirmar venta
+                        className="btn btn-outline-danger"
 
-                </button>
+                    onClick={vaciarVenta}
 
+                    >
+
+                        Vaciar venta
+
+                    </button>
+
+                    <button
+
+                        className="btn-confirmar"
+
+                        onClick={()=>
+
+                            setMostrarModal(true)
+
+                        }
+
+                    >
+
+                        Confirmar venta
+
+                    </button>
+                    
+                </div>
             </div>
+                  <ConfirmarVentaModal
 
+    abierto={mostrarModal}
+
+    carrito={carrito}
+
+    onCerrar={()=>
+
+        setMostrarModal(false)
+
+    }
+
+    onConfirmar={confirmarVenta}
+
+/>
         </div>
-
+        
     );
 
 }
