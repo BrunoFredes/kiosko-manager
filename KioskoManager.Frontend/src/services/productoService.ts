@@ -25,3 +25,27 @@ export async function buscarProductos(texto:string){
     return await response.json();
 
 }
+export async function buscarPorCategoria(idCategoria: number) {
+
+    const response =
+        await fetch(
+            `${API}/Productos/categoria/${idCategoria}`
+        );
+
+    if (!response.ok)
+        throw new Error("Error al cargar productos");
+
+    return await response.json();
+
+}
+export async function obtenerTodosProductos() {
+
+    const response =
+        await fetch(`${API}/Productos/activos`);
+
+    if (!response.ok)
+        throw new Error("Error");
+
+    return await response.json();
+
+}

@@ -18,4 +18,10 @@ public interface IProductoRepository
     Task<List<Producto>> BuscarAsync(string texto);
 
     Task<List<Producto>> ObtenerStockBajoAsync();
+
+    Task<Producto?> GetByCodigoAsync(string codigo);
+
+    Task<List<Producto>> GetByCategoriaAsync(long idCategoria);
+
+    Task<List<Producto>> ObtenerTodosActivosAsync();
 }

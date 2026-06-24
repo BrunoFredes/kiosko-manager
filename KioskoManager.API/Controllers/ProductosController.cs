@@ -174,38 +174,37 @@ public class ProductosController : ControllerBase
     }
     [HttpGet("codigo/{codigo}")]
     public async Task<ActionResult<Producto>>
-    BuscarPorCodigo(
-        string codigo)
-    {
-        var producto =
-            await _context.Productos
-                .FirstOrDefaultAsync(
-                    p =>
-                        p.CodigoBarras ==
-                        codigo);
-
-        if (producto == null)
+    BuscarPorCodigo(string codigo)
         {
-            return NotFound();
+            var producto =
+                await _productoRepository
+                    .GetByCodigoAsync(codigo);
+
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(producto);
         }
-
-        return Ok(producto);
-    }
-    [HttpGet("buscar")]
+    [HttpGet("categoria/{idCategoria}")]
     public async Task<ActionResult<List<Producto>>>
-BuscarPorNombre(
-    string texto)
-    {
-        var productos =
-            await _context.Productos
-                .Where(p =>
-                    p.Activo &&
-                    p.NombreProducto.ToLower()
-                        .Contains(texto.ToLower()))
-                .OrderBy(p => p.NombreProducto)
-                .Take(20)
-                .ToListAsync();
+    GetPorCategoria(long idCategoria)
+        {
+            var productos =
+                await _productoRepository
+                    .GetByCategoriaAsync(idCategoria);
 
-        return Ok(productos);
-    }
+            return Ok(productos);
+        }
+    [HttpGet("activos")]
+    public async Task<ActionResult<List<Producto>>>
+    ObtenerActivos()
+        {
+            var productos =
+                await _productoRepository
+                    .ObtenerTodosActivosAsync();
+
+            return Ok(productos);
+        }
 }

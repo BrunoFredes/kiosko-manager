@@ -1,6 +1,13 @@
-import { useState } from "react";
-import { buscarPorCodigo } from "../../services/productoService";
+import { useEffect, useState } from "react";
+import {
+    buscarPorCodigo,
+    buscarProductos,
+    buscarPorCategoria,
+    obtenerTodosProductos
+} from "../../services/productoService";
+
 import "./Caja.css";
+import { obtenerCategorias } from "../../services/categoriaService";
 
 interface Producto {
 
@@ -22,34 +29,80 @@ function Caja() {
 
     const [codigo, setCodigo] = useState("");
 
-    const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
+    const [categorias, setCategorias] =
+        useState<any[]>([]);
 
-    async function handleBuscar(
-        e: React.KeyboardEvent<HTMLInputElement>
-    ) {
+    const [categoriaSeleccionada,
+        setCategoriaSeleccionada] =
+        useState<number | null>(null);
 
-        if (e.key !== "Enter") return;
+    const [textoBusqueda, setTextoBusqueda] =
+        useState("");
 
-        const producto =
-            await buscarPorCodigo(codigo);
+    const [productosEncontrados, setProductosEncontrados] =
+        useState<Producto[]>([]);
 
-        if (!producto) {
+    const [carrito, setCarrito] =
+        useState<ItemCarrito[]>([]);
 
-            alert("Producto no encontrado");
+    useEffect(() => {
 
-            setCodigo("");
+        obtenerCategorias()
+
+            .then(setCategorias)
+
+            .catch(console.error);
+
+    }, []);
+
+    useEffect(() => {
+
+        if (textoBusqueda.length < 2) {
+
+            setProductosEncontrados([]);
 
             return;
 
         }
 
+        buscarProductos(textoBusqueda)
+
+            .then(setProductosEncontrados);
+
+    }, [textoBusqueda]);
+
+    useEffect(() => {
+
+    if (categoriaSeleccionada == null) {
+
+            obtenerTodosProductos()
+
+                .then(setProductosEncontrados)
+
+                .catch(console.error);
+
+            return;
+
+        }
+
+        buscarPorCategoria(categoriaSeleccionada)
+
+            .then(setProductosEncontrados)
+
+            .catch(console.error);
+
+    }, [categoriaSeleccionada]);
+    function agregarProducto(producto: Producto) {
+
         setCarrito((carritoActual) => {
 
             const existente =
                 carritoActual.find(
+
                     item =>
                         item.producto.idProducto ===
                         producto.idProducto
+
                 );
 
             if (existente) {
@@ -61,7 +114,8 @@ function Caja() {
 
                         ? {
                             ...item,
-                            cantidad: item.cantidad + 1
+                            cantidad:
+                                item.cantidad + 1
                         }
 
                         : item
@@ -83,6 +137,29 @@ function Caja() {
 
         });
 
+    }
+
+    async function handleBuscar(
+        e: React.KeyboardEvent<HTMLInputElement>
+    ) {
+
+        if (e.key !== "Enter") return;
+
+        const producto =
+            await buscarPorCodigo(codigo);
+
+        if (!producto) {
+
+            alert("Producto no encontrado");
+
+            setCodigo("");
+
+            return;
+
+        }
+
+        agregarProducto(producto);
+
         setCodigo("");
 
     }
@@ -94,9 +171,12 @@ function Caja() {
         setCarrito(
 
             carrito.filter(
+
                 item =>
+
                     item.producto.idProducto !==
                     idProducto
+
             )
 
         );
@@ -109,7 +189,9 @@ function Caja() {
             (acc, item) =>
 
                 acc +
+
                 item.producto.precioVenta *
+
                 item.cantidad,
 
             0
@@ -130,7 +212,7 @@ function Caja() {
 
                     className="buscar-producto"
 
-                    placeholder="Escanear código..."
+                    placeholder="Escanear codigo..."
 
                     value={codigo}
 
@@ -141,6 +223,134 @@ function Caja() {
                     onKeyDown={handleBuscar}
 
                 />
+
+                <input
+
+                        className="buscar-producto mt-3"
+
+                        placeholder="Buscar producto..."
+
+                        value={textoBusqueda}
+
+                        onChange={(e)=>{
+
+                            setCategoriaSeleccionada(null);
+
+                            setTextoBusqueda(e.target.value);
+
+                        }}
+                    />
+        <div className="mt-3 d-flex flex-wrap gap-2">
+
+        <button
+
+            className="btn btn-primary"
+
+            onClick={() => {
+
+                setCategoriaSeleccionada(null);
+
+                setTextoBusqueda("");
+
+            }}
+        >
+
+            Todas
+
+        </button>
+
+        {
+
+            categorias.map(categoria => (
+
+                <button
+
+                    key={categoria.idCategoria}
+
+                    className="btn btn-outline-primary"
+
+                    onClick={() =>
+
+                        setCategoriaSeleccionada(
+
+                            categoria.idCategoria
+
+                        )
+
+                    }
+
+                >
+
+                    {categoria.nombreCategoria}
+
+                </button>
+
+            ))
+
+        }
+
+    </div>
+                <div className="lista-busqueda mt-3">
+
+                    {
+
+                        productosEncontrados.map(
+
+                            producto => (
+
+                                <div
+
+                                    key={producto.idProducto}
+
+                                    className="producto-busqueda"
+
+                                >
+
+                                    <div>
+
+                                        <strong>
+
+                                            {producto.nombreProducto}
+
+                                        </strong>
+
+                                        <br />
+
+                                        $
+
+                                        {producto.precioVenta}
+
+                                    </div>
+
+                                    <button
+
+                                        className="btn btn-success"
+
+                                        onClick={() => {
+
+                                            agregarProducto(producto);
+
+                                            setTextoBusqueda("");
+
+                                            setProductosEncontrados([]);
+
+                                        }}
+
+                                    >
+
+                                        +
+
+                                    </button>
+
+                                </div>
+
+                            )
+
+                        )
+
+                    }
+
+                </div>
 
             </div>
 
@@ -153,8 +363,11 @@ function Caja() {
                     carrito.map(item => (
 
                         <div
+
                             key={item.producto.idProducto}
+
                             className="venta-item"
+
                         >
 
                             <div>
@@ -188,9 +401,13 @@ function Caja() {
                             <button
 
                                 onClick={() =>
+
                                     eliminarProducto(
+
                                         item.producto.idProducto
+
                                     )
+
                                 }
 
                             >
@@ -209,9 +426,7 @@ function Caja() {
 
                 <h2>
 
-                    Total:
-
-                    ${total}
+                    Total: ${total}
 
                 </h2>
 

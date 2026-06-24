@@ -100,21 +100,53 @@ public class ProductoRepository : IProductoRepository
     }
     public async Task<List<Producto>>
 
-BuscarAsync(string texto)
-    {
-        texto = texto.ToLower();
+    BuscarAsync(string texto)
+        {
+            texto = texto.ToLower();
 
+            return await _context.Productos
+                .Where(p =>
+                    p.Activo &&
+                    (
+                        p.NombreProducto
+                            .ToLower()
+                            .Contains(texto)
+                        ||
+                        p.CodigoBarras!
+                            .Contains(texto)
+                    ))
+                .ToListAsync();
+        }
+    public async Task<Producto?> GetByCodigoAsync(
+    string codigo)
+    {
         return await _context.Productos
-            .Where(p =>
+            .FirstOrDefaultAsync(p =>
                 p.Activo &&
-                (
-                    p.NombreProducto
-                        .ToLower()
-                        .Contains(texto)
-                    ||
-                    p.CodigoBarras!
-                        .Contains(texto)
-                ))
-            .ToListAsync();
+                p.CodigoBarras == codigo);
     }
+    public async Task<List<Producto>>
+    GetByCategoriaAsync(long idCategoria)
+        {
+            return await _context.Productos
+
+                .Where(p =>
+                    p.Activo &&
+                    p.IdCategoria == idCategoria)
+
+                .OrderBy(p => p.NombreProducto)
+
+                .ToListAsync();
+        }
+    public async Task<List<Producto>>
+    ObtenerTodosActivosAsync()
+        {
+            return await _context.Productos
+
+                .Where(p => p.Activo)
+
+                .OrderBy(p => p.NombreProducto)
+
+                .ToListAsync();
+        }
 }
