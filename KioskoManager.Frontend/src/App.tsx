@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-
+import { ThemeProvider } from './context/ThemeContext';
 import Login from "./pages/Login/Login";
 import Caja from "./pages/Caja/Caja";
 
@@ -18,7 +18,7 @@ function App() {
     }
 
     return (
-
+         <ThemeProvider>
         <Routes>
 
             <Route element={<AppLayout />}>
@@ -36,7 +36,7 @@ function App() {
             </Route>
 
         </Routes>
-
+        </ThemeProvider>
     );
 
 }

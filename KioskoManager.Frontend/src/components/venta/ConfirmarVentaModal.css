@@ -1,181 +1,282 @@
 .modal-overlay{
-
     position:fixed;
-
     inset:0;
-
     background:rgba(0,0,0,.45);
-
     backdrop-filter:blur(4px);
-
     display:flex;
-
     justify-content:center;
-
     align-items:center;
-
     z-index:9999;
-
     animation:fadeIn .2s;
-
 }
 
 .modal-confirmar{
 
-    width:420px;
+    width:900px;
+    max-width:92vw;
+
+    max-height:100vh;
+
+    overflow:hidden;
 
     background:white;
 
-    border-radius:14px;
+    border-radius:16px;
 
-    padding:28px;
+    padding:22px;
 
     box-shadow:0 20px 50px rgba(0,0,0,.25);
 
     animation:slideUp .25s;
 
 }
+.modal-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 320px;
+
+    gap:24px;
+
+    height:70vh;
+
+}
 
 .modal-confirmar h2{
-
     margin-bottom:24px;
-
     text-align:center;
-
 }
 
-.modal-confirmar label{
+.modal-grid{
+    display:grid;
+    grid-template-columns:1fr 340px;
+    gap:32px;
+    max-height:55vh;
+}
 
+.lista-productos{
+    max-height:420px;
+    overflow-y:auto;
+    padding-right:10px;
+}
+
+.item-producto{
+    border:1px solid #e5e5e5;
+    border-radius:10px;
+    padding:12px 16px;
+    margin-bottom:12px;
+}
+
+.item-producto h5{
+    margin:0;
+    margin-bottom:4px;
+}
+
+.item-producto small{
+    color:#6c757d;
+}
+
+.panel-pago label{
     display:block;
-
     margin-top:18px;
-
     margin-bottom:6px;
-
     font-weight:600;
-
 }
 
-.modal-confirmar input,
-
-.modal-confirmar select{
-
+.panel-pago input,
+.panel-pago select{
     width:100%;
-
     padding:10px;
-
     border-radius:8px;
-
     border:1px solid #d9d9d9;
-
 }
 
 .resumen{
-
     display:flex;
-
     justify-content:space-between;
+    margin-top:18px;
+}
+
+.total-final{
+    margin-top:25px;
+    padding:18px;
+    border-radius:12px;
+    background:#e9f8ef;
+    text-align:center;
+}
+
+.total-final span{
+    display:block;
+    color:#198754;
+    font-size:.9rem;
+}
+
+.total-final h2{
+    margin:8px 0 0;
+    color:#198754;
+    font-size:2.2rem;
+}
+
+.vuelto{
+    margin-top:18px;
+    padding:12px;
+    background:#f5f5f5;
+    border-radius:8px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.ticket{
+    margin-top:22px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.ticket input{
+    width:auto;
+}
+
+.acciones{
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    margin-top:28px;
+}
+
+.btn-cancelar{
+    border:none;
+    background:#e9ecef;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.btn-confirmar{
+    border:none;
+    background:#198754;
+    color:white;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.btn-confirmar:hover{
+    background:#157347;
+}
+.lista-productos{
+
+    overflow-y:auto;
+
+    height:100%;
+
+    padding-right:8px;
+
+}
+.item-producto{
+
+    border:1px solid #ececec;
+
+    border-radius:8px;
+
+    padding:10px 14px;
 
     margin-bottom:10px;
 
 }
 
-.vuelto{
+.item-producto h5{
+
+    font-size:1rem;
+
+    margin-bottom:3px;
+
+}
+
+.item-producto small{
+
+    font-size:.85rem;
+
+}
+.panel-pago{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+.total-final{
 
     margin-top:18px;
 
-    padding:12px;
+    padding:16px;
 
-    background:#f5f5f5;
+    border-radius:10px;
 
-    border-radius:8px;
-
-    display:flex;
-
-    justify-content:space-between;
+    background:#eaf7ef;
 
 }
 
+.total-final span{
+
+    font-size:.8rem;
+
+}
+
+.total-final h2{
+
+    margin-top:6px;
+
+    font-size:2rem;
+
+}
+.panel-pago label{
+
+    margin-top:12px;
+
+    margin-bottom:4px;
+
+    font-weight:600;
+
+}
+.panel-pago input,
+.panel-pago select{
+
+    padding:8px 10px;
+
+}
 .acciones{
 
-    display:flex;
-
-    justify-content:flex-end;
-
-    gap:12px;
-
-    margin-top:28px;
+    margin-top:auto;
 
 }
-
-.btn-cancelar{
-
-    border:none;
-
-    background:#e9ecef;
-
-    padding:10px 18px;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
+.btn-imprimir-ticket {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
 }
 
-.btn-confirmar{
-
-    border:none;
-
-    background:#198754;
-
-    color:white;
-
-    padding:10px 18px;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
+.btn-imprimir-ticket:hover {
+    background-color: #138496;
 }
-
-.btn-confirmar:hover{
-
-    background:#157347;
-
-}
-
 @keyframes fadeIn{
-
-    from{
-
-        opacity:0;
-
-    }
-
-    to{
-
-        opacity:1;
-
-    }
-
+    from{opacity:0;}
+    to{opacity:1;}
 }
 
 @keyframes slideUp{
-
     from{
-
         transform:translateY(20px);
-
         opacity:0;
-
     }
-
     to{
-
         transform:translateY(0);
-
         opacity:1;
-
     }
-
 }
