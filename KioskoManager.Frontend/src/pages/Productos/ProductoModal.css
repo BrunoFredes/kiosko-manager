@@ -1,0 +1,215 @@
+.modal-overlay{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    backdrop-filter:blur(4px);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+.modal-content{
+
+    width:650px;
+
+    max-width:95vw;
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    border-radius:18px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--border);
+
+    overflow:hidden;
+
+}
+
+.modal-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:22px 26px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.modal-header h3{
+
+    margin:0;
+
+    font-size:1.3rem;
+
+    font-weight:700;
+
+}
+
+.btn-cerrar{
+
+    background:none;
+
+    border:none;
+
+    font-size:1.3rem;
+
+    cursor:pointer;
+
+    color:var(--text);
+
+}
+
+.modal-body{
+
+    padding:24px;
+
+}
+
+.form-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    margin-bottom:18px;
+
+}
+
+.form-group label{
+
+    font-weight:600;
+
+    font-size:.95rem;
+
+}
+
+.form-group input,
+.form-group select{
+
+    background:var(--input-bg);
+
+    border:1px solid var(--border);
+
+    color:var(--text);
+
+    padding:12px;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+}
+
+.form-row{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:18px;
+
+}
+
+.modal-footer{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:12px;
+
+    padding:22px 26px;
+
+    border-top:1px solid var(--border);
+
+}
+
+.btn-cancelar{
+
+    border:none;
+
+    background:#e4e4e4;
+
+    color:#222;
+
+    padding:12px 20px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.btn-cancelar:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.btn-guardar{
+
+    border:none;
+
+    background:var(--primary);
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.btn-guardar:hover{
+
+    background:var(--primary-hover);
+
+    transform:translateY(-2px);
+
+}
+
+.error{
+
+    background:#ffebee;
+
+    color:#b71c1c;
+
+    padding:12px;
+
+    border-radius:8px;
+
+    margin-bottom:20px;
+
+}
+
+[data-theme="dark"] .btn-cancelar{
+
+    background:#3b3b3b;
+
+    color:white;
+
+}

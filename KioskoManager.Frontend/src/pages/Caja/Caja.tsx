@@ -3,7 +3,7 @@ import {
     buscarPorCodigo,
     buscarProductos,
     buscarPorCategoria,
-    obtenerTodosProductos
+    obtenerProductosActivos
 } from "../../services/productoService";
 import ConfirmarVentaModal from "../../components/venta/ConfirmarVentaModal";
 
@@ -54,7 +54,7 @@ function Caja() {
     // Búsqueda por categoría
     useEffect(() => {
         if (categoriaSeleccionada === null) {
-            obtenerTodosProductos()
+            obtenerProductosActivos()
                 .then(setProductosEncontrados)
                 .catch(console.error);
             return;
@@ -159,7 +159,7 @@ function Caja() {
     );
 
     return (
-        <div className="caja-container">
+        <div className="caja-container caja-theme">
             <div className="productos-panel">
                 <h2>Caja</h2>
 

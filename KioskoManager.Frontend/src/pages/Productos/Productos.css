@@ -1,0 +1,365 @@
+.productos-page{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+    height:calc(100vh - 120px);
+
+}
+
+.productos-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.productos-header h2{
+
+    margin:0;
+
+    font-weight:700;
+
+}
+
+.btn-agregar{
+
+    background:#4f46e5;
+
+    color:white;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:12px 22px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.btn-agregar:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.tabla-productos{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:var(--surface);
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+}
+
+.tabla-productos thead{
+
+    background:var(--primary);
+
+    color:white;
+
+}
+
+.tabla-productos th{
+
+    padding:18px;
+
+    text-align:left;
+
+}
+
+.tabla-productos td{
+
+    padding:18px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.tabla-productos tbody tr:hover{
+
+    background:rgba(79,70,229,.05);
+
+}
+
+.buscar-producto{
+ 
+    width:100%;
+
+    padding:14px;
+    margin-bottom:20px;
+    margin: 20px;
+
+    border-radius:12px;
+
+    background:var(--input-bg);
+
+    color:var(--text);
+
+    border:1px solid var(--border);
+
+}
+.productos-page{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+    height:100%;
+
+    overflow:hidden;
+
+}
+
+.tabla-container{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    background:var(--surface);
+
+    border-radius:16px;
+
+}
+.tabla-productos thead{
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--surface);
+}
+.tabla-productos thead th{
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.tabla-productos tbody tr{
+    transition:.18s;
+}
+
+.tabla-productos tbody tr:hover{
+
+    background:rgba(13,110,253,.05);
+
+}
+[data-theme="dark"] .tabla-productos tbody tr:hover{
+
+    background:rgba(255,255,255,.04);
+
+}
+.stock-normal{
+
+    color:#198754;
+
+    font-weight:600;
+
+}
+
+.stock-bajo{
+
+    color:#dc3545;
+
+    font-weight:700;
+
+}
+.form-check-input{
+
+    cursor:pointer;
+
+    transform:scale(1.15);
+
+}
+.btn-editar{
+
+    background:#1593fa;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:6px 12px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+.form-check-input{
+
+    cursor:pointer;
+
+    transform:scale(1.15);
+
+}
+.tabla-container{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    border-radius:16px;
+
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow);
+
+}
+
+.tabla-productos{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.tabla-productos thead{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:10;
+
+    background:var(--surface);
+
+}
+
+.tabla-productos thead th{
+
+    padding:16px;
+
+    border-bottom:2px solid var(--border);
+
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+}
+
+.tabla-productos td{
+
+    padding:16px;
+
+    border-bottom:1px solid var(--border);
+
+}
+.tabla-productos tbody tr{
+
+    transition:.18s;
+
+}
+
+.tabla-productos tbody tr:hover{
+
+    background:rgba(13,110,253,.06);
+
+}
+
+[data-theme="dark"] .tabla-productos tbody tr:hover{
+
+    background:rgba(255,255,255,.05);
+
+}
+.btn-editar{
+
+    background:#4f46e5;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:8px 14px;
+
+    font-size:.9rem;
+
+    transition:.2s;
+
+}
+
+.btn-editar:hover{
+
+    transform:translateY(-2px);
+
+    background:#4338ca;
+
+}
+.form-check-input{
+
+    cursor:pointer;
+
+    transform:scale(1.15);
+
+}
+/* Toggle Bonito */
+.switch-toggle {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+
+.switch-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4caf50;   /* Verde cuando está prendido */
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+/* Efecto opcional al hover */
+.switch-toggle:hover .slider {
+    opacity: 0.9;
+}

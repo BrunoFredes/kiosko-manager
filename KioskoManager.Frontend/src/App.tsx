@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from './context/ThemeContext';
 import Login from "./pages/Login/Login";
 import Caja from "./pages/Caja/Caja";
+import Productos from "./pages/Productos/Productos";
 
 import AppLayout from "./layouts/AppLayout";
 
@@ -29,12 +30,16 @@ function App() {
                 />
 
                 <Route
+                    path="/productos"
+                    element={<Productos />}
+                />
+                <Route
                     path="*"
                     element={<Navigate to="/caja" />}
                 />
 
             </Route>
-
+            
         </Routes>
         </ThemeProvider>
     );

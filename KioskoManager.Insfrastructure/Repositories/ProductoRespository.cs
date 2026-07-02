@@ -19,7 +19,7 @@ public class ProductoRepository : IProductoRepository
     public async Task<List<Producto>> GetAllAsync()
     {
         return await _context.Productos
-            .Where(p => p.Activo)
+            .OrderBy(p => p.NombreProducto)
             .ToListAsync();
     }
 
@@ -106,15 +106,11 @@ public class ProductoRepository : IProductoRepository
 
             return await _context.Productos
                 .Where(p =>
-                    p.Activo &&
-                    (
-                        p.NombreProducto
-                            .ToLower()
-                            .Contains(texto)
-                        ||
-                        p.CodigoBarras!
-                            .Contains(texto)
-                    ))
+                    p.NombreProducto.ToLower().Contains(texto)
+                    ||
+                    p.CodigoBarras!.Contains(texto)
+                )
+                .OrderBy(p => p.NombreProducto)
                 .ToListAsync();
         }
     public async Task<Producto?> GetByCodigoAsync(

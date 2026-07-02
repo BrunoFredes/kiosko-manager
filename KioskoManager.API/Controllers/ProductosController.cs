@@ -207,4 +207,28 @@ public class ProductosController : ControllerBase
 
             return Ok(productos);
         }
+    
+    [HttpGet("todos")]
+    public async Task<IActionResult> ObtenerTodos()
+    {
+        var productos =
+            await _productoRepository.GetAllAsync();
+
+        return Ok(productos);
+    }
+    [HttpPatch("{id}/activo")]
+    public async Task<IActionResult> CambiarEstado(long id)
+    {
+        var producto =
+            await _productoRepository.GetByIdAsync(id);
+
+        if (producto == null)
+            return NotFound();
+
+        producto.Activo = !producto.Activo;
+
+        await _productoRepository.UpdateAsync(producto);
+
+        return Ok(producto);
+    }
 }

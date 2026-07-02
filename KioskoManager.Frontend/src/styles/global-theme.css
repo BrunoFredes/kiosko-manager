@@ -1,0 +1,114 @@
+/* Fondo general */
+
+body{
+
+    background:var(--background);
+
+    color:var(--text);
+
+}
+
+/* Tarjetas */
+
+.card,
+.productos-panel,
+.venta-panel,
+.modal-confirmar{
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow);
+
+}
+
+/* Inputs */
+
+input,
+select,
+textarea{
+
+    background:var(--input-bg);
+
+    color:var(--text);
+
+    border:1px solid var(--border);
+
+}
+
+input::placeholder{
+
+    color:var(--placeholder);
+
+}
+
+/* Botones outline */
+
+.btn-outline-primary{
+
+    border-color:var(--primary);
+
+    color:var(--primary);
+
+}
+
+.btn-outline-primary:hover{
+
+    background:var(--primary);
+
+    color:white;
+
+}
+
+/* Scroll */
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--border);
+
+    border-radius:20px;
+
+}
+
+/* Header */
+
+.header{
+
+    background:var(--surface);
+
+    border-bottom:1px solid var(--border);
+
+}
+
+/* Sidebar */
+
+.sidebar{
+
+    background:var(--sidebar);
+
+    color:var(--sidebar-text);
+
+}
+
+.sidebar a{
+
+    color:inherit;
+
+}
+
+/* Modal overlay */
+
+.modal-overlay{
+
+    backdrop-filter:blur(4px);
+
+}

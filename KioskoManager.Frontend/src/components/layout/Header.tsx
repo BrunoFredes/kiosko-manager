@@ -1,10 +1,19 @@
-import { FaSearch, FaBell } from "react-icons/fa";
+import { FaSearch,} from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import "./Header.css";
+import { useTheme } from "../../context/ThemeContext";
+import {
+
+    FaMoon,
+
+    FaSun
+
+} from "react-icons/fa";
 
 function Header() {
 
     const { usuario } = useAuth();
+    const { theme, toggleTheme } = useTheme();
 
     return (
 
@@ -15,18 +24,42 @@ function Header() {
                 <FaSearch />
 
                 <input
-                    type="text"
-                    placeholder="Buscar..."
-                />
+                                    type="text"
+                                    placeholder="Buscar..."
+                                />
 
-            </div>
+                            </div>
 
-            <div className="header-right">
+                            <div className="header-right">
 
-                <FaBell className="icon"/>
+                                <button
 
+                                    className="theme-toggle-btn"
+
+                                    onClick={toggleTheme}
+
+                                >
+
+                                    {
+
+                                        theme === "light"
+
+                                            ? <FaMoon/>
+
+                                            : <FaSun/>
+
+                                    }
+
+                                </button>
+                                 <div className="user-avatar">
+
+                                    {usuario?.nombreUsuario.charAt(0)}
+
+                                </div>
                 <div className="header-user">
+                    
 
+                    
                     <span>
 
                         {usuario?.nombreUsuario}
