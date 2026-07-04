@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import "./ProductoModal.css";
-
+import toast from "react-hot-toast";
 import {
     crearProducto,
     actualizarProducto,
@@ -113,8 +113,10 @@ function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
 
             onGuardado();
             onCerrar();
+            toast.success(`Producto ${esEdicion ? "actualizado" : "creado"} exitosamente`);
         } catch (err: any) {
-            setError(err.message || "Error al guardar el producto");
+            toast.error(`Error: ${err.message || "No se pudo guardar el producto"}`);
+            setError(err.message || "No se pudo guardar el producto");
         } finally {
             setLoading(false);
         }

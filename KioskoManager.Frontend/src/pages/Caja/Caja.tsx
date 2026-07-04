@@ -6,7 +6,7 @@ import {
     obtenerProductosActivos
 } from "../../services/productoService";
 import ConfirmarVentaModal from "../../components/venta/ConfirmarVentaModal";
-
+import toast from "react-hot-toast";
 import "./Caja.css";
 import { obtenerCategorias } from "../../services/categoriaService";
 
@@ -40,6 +40,7 @@ function Caja() {
         obtenerCategorias()
             .then(setCategorias)
             .catch(console.error);
+          
     }, []);
 
     // Búsqueda por texto
@@ -57,6 +58,7 @@ function Caja() {
             obtenerProductosActivos()
                 .then(setProductosEncontrados)
                 .catch(console.error);
+         
             return;
         }
         buscarPorCategoria(categoriaSeleccionada)
@@ -103,7 +105,7 @@ function Caja() {
         if (producto) {
             agregarProducto(producto);
         } else {
-            alert("Producto no encontrado");
+            toast.error("Producto no encontrado");
         }
 
         setCodigo("");
@@ -117,7 +119,7 @@ function Caja() {
 
             if (existente) {
                 if (existente.cantidad >= producto.stockActual) {
-                    alert("No hay suficiente stock");
+                    toast.error("No hay suficiente stock para agregar más de este producto");
                     return carritoActual;
                 }
                 return carritoActual.map(item =>
@@ -143,6 +145,7 @@ function Caja() {
     function vaciarVenta() {
         if (window.confirm("¿Vaciar la venta actual?")) {
             setCarrito([]);
+            toast.success("Venta vaciada");
         }
     }
 

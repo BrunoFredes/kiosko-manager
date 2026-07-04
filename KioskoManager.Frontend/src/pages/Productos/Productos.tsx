@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-
+import toast from "react-hot-toast";
 import { obtenerTodosProductos, buscarProductos } from "../../services/productoService";
 import { cambiarEstadoProducto } from "../../services/productoService";
 
@@ -35,6 +35,7 @@ function Productos() {
                 setProductos(data);
             }
         } catch (error) {
+            toast.error("Error al cargar productos");
             console.error("Error al cargar productos:", error);
         }
     }
@@ -43,9 +44,10 @@ function Productos() {
         try {
             await cambiarEstadoProducto(id);
             await cargarProductos();
+            toast.success("Estado del producto cambiado");
         } catch (error) {
             console.error("Error al cambiar estado:", error);
-            alert("No se pudo cambiar el estado del producto");
+            toast.error("No se pudo cambiar el estado del producto");
         }
     }
 
