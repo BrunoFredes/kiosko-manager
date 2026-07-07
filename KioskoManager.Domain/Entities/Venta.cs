@@ -13,6 +13,8 @@ public class Venta
 
     public long IdUsuario { get; set; }
 
+    public string MetodoPago { get; set; } = "Efectivo";
+
     public Usuario Usuario { get; set; } = null!;
 
     public ICollection<DetalleVenta>

@@ -6,8 +6,7 @@ using KioskoManager.Infrastructure.Data;
 
 namespace KioskoManager.Infrastructure.Repositories;
 
-public class VentaRepository
-    : IVentaRepository
+public class VentaRepository : IVentaRepository
 {
     private readonly KioskoDbContext _context;
 
@@ -19,127 +18,105 @@ public class VentaRepository
     }
 
     public async Task<Venta?> CrearVentaAsync(
-    CreateVentaDto ventaDto
-)
+        CreateVentaDto ventaDto
+    )
     {
-        decimal totalVenta = 0;
+        using var transaction =
+            await _context.Database.BeginTransactionAsync();
 
-        var detallesVenta =
-            new List<DetalleVenta>();
-
-        foreach (var detalle in ventaDto.Detalles)
+        try
         {
-            var producto =
-                await _context.Productos
-                    .FirstOrDefaultAsync(
-                        p => p.IdProducto ==
-                             detalle.IdProducto
-                    );
+            decimal totalVenta = 0;
 
-            if (producto == null)
+            var detallesVenta =
+                new List<DetalleVenta>();
+
+            foreach (var detalle in ventaDto.Detalles)
             {
-                return null;
+                var producto =
+                    await _context.Productos
+                        .FirstOrDefaultAsync(
+                            p => p.IdProducto == detalle.IdProducto
+                        );
+
+                if (producto == null)
+                    return null;
+
+                if (producto.StockActual < detalle.Cantidad)
+                    return null;
+
+                var subtotal =
+                    producto.PrecioVenta * detalle.Cantidad;
+
+                totalVenta += subtotal;
+
+                detallesVenta.Add(
+                    new DetalleVenta
+                    {
+                        IdProducto = producto.IdProducto,
+                        Cantidad = detalle.Cantidad,
+                        PrecioUnitario = producto.PrecioVenta,
+                        Subtotal = subtotal
+                    }
+                );
             }
 
-            if (
-                producto.StockActual <
-                detalle.Cantidad
-            )
+            var venta = new Venta
             {
-                return null;
+                FechaVenta = DateTime.UtcNow,
+                TotalVenta = totalVenta,
+                IdUsuario = ventaDto.IdUsuario,
+                MetodoPago = ventaDto.MetodoPago
+            };
+
+            _context.Ventas.Add(venta);
+
+            await _context.SaveChangesAsync();
+
+            foreach (var detalle in detallesVenta)
+            {
+                detalle.IdVenta = venta.IdVenta;
+
+                _context.DetalleVenta.Add(detalle);
+
+                var producto =
+                    await _context.Productos
+                        .FirstAsync(
+                            p => p.IdProducto == detalle.IdProducto
+                        );
+
+                var stockAnterior =
+                    producto.StockActual;
+
+                producto.StockActual -=
+                    detalle.Cantidad;
+
+                var movimiento =
+                    new MovimientoStock
+                    {
+                        IdProducto = producto.IdProducto,
+                        IdUsuario = ventaDto.IdUsuario,
+                        TipoMovimiento = "VENTA",
+                        Cantidad = detalle.Cantidad,
+                        StockAnterior = stockAnterior,
+                        StockNuevo = producto.StockActual,
+                        Observacion = $"Venta #{venta.IdVenta}",
+                        FechaMovimiento = DateTime.UtcNow
+                    };
+
+                _context.MovimientosStock.Add(movimiento);
             }
 
-            var subtotal =
-                producto.PrecioVenta *
-                detalle.Cantidad;
+            await _context.SaveChangesAsync();
 
-            totalVenta += subtotal;
+            await transaction.CommitAsync();
 
-            detallesVenta.Add(
-                new DetalleVenta
-                {
-                    IdProducto =
-                        producto.IdProducto,
-
-                    Cantidad =
-                        detalle.Cantidad,
-
-                    PrecioUnitario =
-                        producto.PrecioVenta,
-
-                    Subtotal =
-                        subtotal
-                }
-            );
+            return venta;
         }
-
-        var venta = new Venta
+        catch
         {
-            FechaVenta = DateTime.UtcNow,
-            TotalVenta = totalVenta,
-            IdUsuario = ventaDto.IdUsuario
-        };
-        _context.Ventas.Add(venta);
-
-        await _context.SaveChangesAsync();
-
-        foreach (var detalle in detallesVenta)
-        {
-            detalle.IdVenta =
-                venta.IdVenta;
-
-            _context.DetalleVenta.Add(
-                detalle
-            );
-
-            var producto =
-                await _context.Productos
-                    .FirstAsync(
-                        p => p.IdProducto ==
-                             detalle.IdProducto
-                    );
-
-            var stockAnterior =
-    producto.StockActual;
-
-            producto.StockActual -=
-                detalle.Cantidad;
-
-            var movimiento =
-                new MovimientoStock
-                {
-                    IdProducto =
-                        producto.IdProducto,
-
-                    IdUsuario =
-                        ventaDto.IdUsuario,
-
-                    TipoMovimiento =
-                        "VENTA",
-
-                    Cantidad =
-                        detalle.Cantidad,
-
-                    StockAnterior =
-                        stockAnterior,
-
-                    StockNuevo =
-                        producto.StockActual,
-
-                    Observacion =
-                        $"Venta #{venta.IdVenta}",
-
-                    FechaMovimiento =
-                        DateTime.UtcNow
-                };
-
-            _context.MovimientosStock.Add(
-                movimiento
-            );
+            await transaction.RollbackAsync();
+            throw;
         }
-
-        await _context.SaveChangesAsync();
-
-        return venta;
     }
 }
