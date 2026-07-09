@@ -8,7 +8,10 @@ import {
 import ConfirmarVentaModal from "../../components/venta/ConfirmarVentaModal";
 import toast from "react-hot-toast";
 import "./Caja.css";
+import ArticuloManualModal from "../../components/articuloManual/ArticuloManualModal";
 import { obtenerCategorias } from "../../services/categoriaService";
+import { crearVenta } from "../../services/ventaService";
+import { useAuth } from "../../context/AuthContext";
 
 interface Producto {
     idProducto: number;
@@ -31,7 +34,9 @@ function Caja() {
     const [textoBusqueda, setTextoBusqueda] = useState("");
     const [productosEncontrados, setProductosEncontrados] = useState<Producto[]>([]);
     const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
-
+    const [mostrarArticuloManual, setMostrarArticuloManual] =
+    useState(false);
+    const { usuario } = useAuth();
     const inputEscaneoRef = useRef<HTMLInputElement>(null);
     const lastEnterTime = useRef<number>(0);
 
@@ -149,12 +154,64 @@ function Caja() {
         }
     }
 
-    function confirmarVenta(metodoPago: string, recibido: number) {
-        console.log({ carrito, metodoPago, recibido });
-        setMostrarModal(false);
-        setCarrito([]);
-        setCodigo("");
+    async function confirmarVenta(
+    metodoPago: string,
+    _recibido: number
+) {
+
+    if (!usuario) {
+
+        toast.error("No hay un usuario logueado.");
+
+        return;
+
     }
+
+    try {
+
+        const venta = {
+
+            idUsuario: usuario.idUsuario,
+
+            metodoPago,
+
+            detalles: carrito.map(item => ({
+
+                idProducto:
+                    item.producto.idProducto > 0
+                        ? item.producto.idProducto
+                        : null,
+
+                cantidad: item.cantidad,
+
+                nombreItem: item.producto.nombreProducto
+
+            }))
+
+        };
+
+        await crearVenta(venta);
+
+        toast.success("Venta registrada correctamente.");
+
+        setMostrarModal(false);
+
+        setCarrito([]);
+
+        setCodigo("");
+
+        inputEscaneoRef.current?.focus();
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        toast.error("No se pudo registrar la venta.");
+
+    }
+
+}
 
     const total = carrito.reduce(
         (acc, item) => acc + item.producto.precioVenta * item.cantidad,
@@ -185,6 +242,18 @@ function Caja() {
                         setTextoBusqueda(e.target.value);
                     }}
                 />
+                <div className="acciones-caja">
+
+                    <button
+                        className="btn-articulo-manual"
+                        onClick={() =>
+                            setMostrarArticuloManual(true)
+                        }
+                    >
+                        Artículo manual
+                    </button>
+
+                </div>
 
                 <div className="mt-3 d-flex flex-wrap gap-2">
                     <button className="btn btn-primary" onClick={() => setCategoriaSeleccionada(null)}>
@@ -262,7 +331,35 @@ function Caja() {
                 onCerrar={() => setMostrarModal(false)}
                 onConfirmar={confirmarVenta}
             />
+            <ArticuloManualModal
+
+                abierto={mostrarArticuloManual}
+
+                onCerrar={() =>
+                    setMostrarArticuloManual(false)
+                }
+
+                onAgregar={(articulo) => {
+
+                    setCarrito(prev => [
+                        ...prev,
+                        {
+                            producto: {
+                                idProducto: Date.now() * -1,
+                                nombreProducto: articulo.nombreProducto,
+                                precioVenta: articulo.precioVenta,
+                                codigoBarras: "",
+                                stockActual: 999999
+                            },
+                            cantidad: articulo.cantidad
+                        }
+                    ]);
+
+                }}
+
+            />
         </div>
+        
     );
 }
 

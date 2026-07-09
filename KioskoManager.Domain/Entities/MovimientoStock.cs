@@ -11,7 +11,7 @@ public class MovimientoStock
 
 
     [JsonIgnore]
-    public Producto Producto { get; set; } = null!;
+    public Producto? Producto { get; set; } = null!;
 
     public long IdUsuario { get; set; }
 

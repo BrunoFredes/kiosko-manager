@@ -11,13 +11,15 @@ public class DetalleVenta
 
     public Venta Venta { get; set; } = null!;
 
-    public long IdProducto { get; set; }
+    public long? IdProducto { get; set; }
 
     public Producto Producto { get; set; } = null!;
 
     public int Cantidad { get; set; }
 
     public decimal PrecioUnitario { get; set; }
+
+    public string? DescripcionManual { get; set; }
 
     public decimal Subtotal { get; set; }
 }

@@ -114,7 +114,9 @@ namespace KioskoManager.Infrastructure.Data
 
                 entity.Property(e => e.IdUsuario)
                     .HasColumnName("id_usuario");
+                entity.Property(e => e.MetodoPago)
 
+                    .HasColumnName("metodo_pago");
                 entity.HasOne(e => e.Usuario)
                     .WithMany(u => u.Ventas)
                     .HasForeignKey(e => e.IdUsuario);
@@ -143,6 +145,8 @@ namespace KioskoManager.Infrastructure.Data
 
                 entity.Property(e => e.Subtotal)
                     .HasColumnName("subtotal");
+                entity.Property(e => e.DescripcionManual)
+                    .HasColumnName("descripcion_manual");
 
                 entity.HasOne(e => e.Venta)
                     .WithMany(v => v.Detalles)
