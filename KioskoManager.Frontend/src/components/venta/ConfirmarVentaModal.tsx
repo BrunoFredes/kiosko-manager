@@ -50,12 +50,13 @@ const imprimirTicket = () => {
             <title>Ticket</title>
             <style>
                 @page {
-                    size: 80mm auto;     /* Cambia a 58mm si tu impresora es más angosta */
+                    size: 80mm auto;
                     margin: 0;
                 }
                 body {
                     font-family: 'Courier New', monospace;
-                    font-size: 12px;
+                    font-size: 14px;           /* ← Cambiado de 12px a 14px */
+                    line-height: 1.3;          /* Mejora la separación entre líneas */
                     width: 80mm;
                     margin: 0 auto;
                     padding: 5mm;
@@ -64,9 +65,21 @@ const imprimirTicket = () => {
                 .right { text-align: right; }
                 hr { border: 1px dashed #000; margin: 8px 0; }
                 table { width: 100%; border-collapse: collapse; }
-                th, td { padding: 2px 0; }
-                .total { font-weight: bold; font-size: 14px; }
-                .footer { margin-top: 15px; font-size: 11px; }
+                th, td { padding: 3px 0; }     /* Un poco más de espacio vertical */
+                
+                .total { 
+                    font-weight: bold; 
+                    font-size: 15px;           /* Un poco más grande que el resto */
+                }
+                .footer { 
+                    margin-top: 15px; 
+                    font-size: 12px;           /* Footer un poco más grande también */
+                }
+                
+                h2 {
+                    font-size: 18px;
+                    margin: 5px 0;
+                }
             </style>
         </head>
         <body>
@@ -123,7 +136,6 @@ const imprimirTicket = () => {
         printWindow.document.write(ticketHTML);
         printWindow.document.close();
         
-        // Espera un poco para que cargue y luego imprime
         setTimeout(() => {
             printWindow.focus();
             printWindow.print();
