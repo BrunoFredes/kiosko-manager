@@ -38,10 +38,13 @@ export async function crearVenta(venta: VentaDto) {
 
     if (!response.ok) {
 
-        throw new Error("No se pudo registrar la venta");
+    const error = await response.text();
 
-    }
+    console.error(error);
 
+    throw new Error(error);
+
+}
     return await response.json();
 
 }

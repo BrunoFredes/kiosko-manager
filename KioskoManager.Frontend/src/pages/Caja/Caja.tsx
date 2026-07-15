@@ -182,9 +182,14 @@ function Caja() {
                         ? item.producto.idProducto
                         : null,
 
+                descripcionManual:
+                    item.producto.idProducto > 0
+                        ? null
+                        : item.producto.nombreProducto,
+
                 cantidad: item.cantidad,
 
-                nombreItem: item.producto.nombreProducto
+                precioUnitario: item.producto.precioVenta
 
             }))
 
@@ -221,27 +226,31 @@ function Caja() {
     return (
         <div className="caja-container caja-theme">
             <div className="productos-panel">
-                <h2>Caja</h2>
-
-                <input
-                    ref={inputEscaneoRef}
-                    className="buscar-producto input-escaner"
-                    placeholder="Escanear código de barras..."
-                    value={codigo}
-                    onChange={(e) => setCodigo(e.target.value)}
-                    onKeyDown={handleEscaneo}
-                    autoFocus
-                />
-
-                <input
-                    className="buscar-producto mt-3"
-                    placeholder="Buscar producto..."
-                    value={textoBusqueda}
-                    onChange={(e) => {
-                        setCategoriaSeleccionada(null);
-                        setTextoBusqueda(e.target.value);
-                    }}
-                />
+                
+                <div className="caja-buscadores">
+                    <h2>Caja</h2>
+                    <div className="Buscadores">
+                        <input
+                            ref={inputEscaneoRef}
+                            className="buscar-producto input-escaner"
+                            placeholder="Escanear código de barras..."
+                            value={codigo}
+                            onChange={(e) => setCodigo(e.target.value)}
+                            onKeyDown={handleEscaneo}
+                            autoFocus
+                        />
+                        <input
+                            className="buscar-producto mt-3"
+                            placeholder="Buscar producto..."
+                            value={textoBusqueda}
+                            onChange={(e) => {
+                                setCategoriaSeleccionada(null);
+                                setTextoBusqueda(e.target.value);
+                            }}
+                        />
+                    </div>
+                    
+                </div>
                 <div className="acciones-caja">
 
                     <button

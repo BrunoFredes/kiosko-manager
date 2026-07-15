@@ -20,29 +20,29 @@ public class VentasController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CrearVenta(
-        CreateVentaDto ventaDto
-    )
+    public async Task<IActionResult> CrearVenta(CreateVentaDto ventaDto)
     {
-        var venta =
-            await _ventaRepository
-                .CrearVentaAsync(
-                    ventaDto
-                );
-
-        if (venta == null)
+        try
         {
-            return BadRequest(
-                "No se pudo registrar la venta"
-            );
+            var venta =
+                await _ventaRepository
+                    .CrearVentaAsync(ventaDto);
+
+            if (venta == null)
+                return BadRequest("Repositorio devolvió null");
+
+            return Ok(new
+            {
+                venta.IdVenta,
+                venta.FechaVenta,
+                venta.TotalVenta,
+                venta.IdUsuario,
+                venta.MetodoPago
+            });
         }
-
-        return Ok(new
+        catch (Exception ex)
         {
-            venta.IdVenta,
-            venta.FechaVenta,
-            venta.TotalVenta,
-            venta.IdUsuario
-        });
+            return BadRequest(ex.ToString());
+        }
     }
 }

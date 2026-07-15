@@ -71,13 +71,36 @@ function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
         lastEnterTime.current = 0;
     }, [abierto, producto]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === "number" ? Number(value) : value
-        }));
-    };
+    const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
+
+    const { name, value } = e.target;
+
+    // Campos decimales
+    if (name === "precioCompra" || name === "precioVenta") {
+
+        // Solo números y un punto decimal
+        if (!/^\d*\.?\d*$/.test(value)) return;
+
+    }
+
+    // Campos enteros
+    if (
+        name === "stockActual" ||
+        name === "stockMinimo" ||
+        name === "idCategoria"
+    ) {
+
+        if (!/^\d*$/.test(value)) return;
+
+    }
+
+    setFormData(prev => ({
+        ...prev,
+        [name]: value
+    }));
+};
 
     // ←=== CONTROL ANTI LECTOR DE CÓDIGO DE BARRAS ===←
     const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -96,7 +119,21 @@ function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
             }
         }
     };
+    const productoEnviar = {
 
+        ...formData,
+
+        precioCompra: Number(formData.precioCompra),
+
+        precioVenta: Number(formData.precioVenta),
+
+        stockActual: Number(formData.stockActual),
+
+        stockMinimo: Number(formData.stockMinimo),
+
+        idCategoria: Number(formData.idCategoria)
+
+    };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (loading) return;
@@ -106,9 +143,9 @@ function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
 
         try {
             if (esEdicion && producto?.idProducto !== undefined) {
-                await actualizarProducto(producto.idProducto, formData);
+                await actualizarProducto(producto.idProducto, productoEnviar);
             } else {
-                await crearProducto(formData);
+                await crearProducto(productoEnviar);
             }
 
             onGuardado();
@@ -162,12 +199,12 @@ function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Precio Compra *</label>
-                                <input type="number" step="0.01" name="precioCompra"
+                                <input type="text" inputMode="decimal" name="precioCompra"
                                     value={formData.precioCompra} onChange={handleChange} required />
                             </div>
                             <div className="form-group">
                                 <label>Precio Venta *</label>
-                                <input type="number" step="0.01" name="precioVenta"
+                                <input type="text" inputMode="decimal" name="precioVenta"
                                     value={formData.precioVenta} onChange={handleChange} required />
                             </div>
                         </div>
@@ -175,12 +212,12 @@ function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Stock Actual *</label>
-                                <input type="number" name="stockActual"
+                                <input type="text" inputMode="decimal" name="stockActual"
                                     value={formData.stockActual} onChange={handleChange} required />
                             </div>
                             <div className="form-group">
                                 <label>Stock Mínimo *</label>
-                                <input type="number" name="stockMinimo"
+                                <input type="text" inputMode="decimal" name="stockMinimo"
                                     value={formData.stockMinimo} onChange={handleChange} required />
                             </div>
                         </div>

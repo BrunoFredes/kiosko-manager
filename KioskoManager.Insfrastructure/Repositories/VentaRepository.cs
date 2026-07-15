@@ -33,6 +33,34 @@ public class VentaRepository : IVentaRepository
 
             foreach (var detalle in ventaDto.Detalles)
             {
+                // =============================
+                // PRODUCTO MANUAL
+                // =============================
+                if (detalle.IdProducto == null)
+                {
+                    var subtotal =
+                        detalle.PrecioUnitario * detalle.Cantidad;
+
+                    totalVenta += subtotal;
+
+                    detallesVenta.Add(
+                        new DetalleVenta
+                        {
+                            IdProducto = null,
+                            DescripcionManual = detalle.DescripcionManual,
+                            Cantidad = detalle.Cantidad,
+                            PrecioUnitario = detalle.PrecioUnitario,
+                            Subtotal = subtotal
+                        }
+                    );
+
+                    continue;
+                }
+
+                // =============================
+                // PRODUCTO NORMAL
+                // =============================
+
                 var producto =
                     await _context.Productos
                         .FirstOrDefaultAsync(
@@ -40,15 +68,19 @@ public class VentaRepository : IVentaRepository
                         );
 
                 if (producto == null)
+                {
                     return null;
+                }
 
                 if (producto.StockActual < detalle.Cantidad)
+                {
                     return null;
+                }
 
-                var subtotal =
+                var subtotalProducto =
                     producto.PrecioVenta * detalle.Cantidad;
 
-                totalVenta += subtotal;
+                totalVenta += subtotalProducto;
 
                 detallesVenta.Add(
                     new DetalleVenta
@@ -56,7 +88,7 @@ public class VentaRepository : IVentaRepository
                         IdProducto = producto.IdProducto,
                         Cantidad = detalle.Cantidad,
                         PrecioUnitario = producto.PrecioVenta,
-                        Subtotal = subtotal
+                        Subtotal = subtotalProducto
                     }
                 );
             }
@@ -78,6 +110,12 @@ public class VentaRepository : IVentaRepository
                 detalle.IdVenta = venta.IdVenta;
 
                 _context.DetalleVenta.Add(detalle);
+
+                // Si es un producto manual, no hay que descontar stock
+                if (detalle.IdProducto == null)
+                {
+                    continue;
+                }
 
                 var producto =
                     await _context.Productos
@@ -106,6 +144,7 @@ public class VentaRepository : IVentaRepository
 
                 _context.MovimientosStock.Add(movimiento);
             }
+
 
             await _context.SaveChangesAsync();
 
