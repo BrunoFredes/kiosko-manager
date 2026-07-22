@@ -3,6 +3,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Login from "./pages/Login/Login";
 import Caja from "./pages/Caja/Caja";
 import Productos from "./pages/Productos/Productos";
+import Usuarios from "./pages/Usuarios/Usuarios";
 
 import AppLayout from "./layouts/AppLayout";
 
@@ -32,6 +33,10 @@ function App() {
                 <Route
                     path="/productos"
                     element={<Productos />}
+                />
+                <Route
+                    path="/usuarios"
+                    element={<Usuarios />}
                 />
                 <Route
                     path="*"

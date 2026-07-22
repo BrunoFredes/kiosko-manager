@@ -20,5 +20,8 @@ public interface IUsuarioRepository
     long idUsuario,
     string passwordActual,
     string passwordNueva
-);
+    );
+    Task<List<Usuario>> BuscarAsync(string texto);
+
+    Task<bool> CambiarEstadoAsync(long id);
 }

@@ -21,7 +21,7 @@ public class UsuarioRepository
        GetAllAsync()
     {
         return await _context.Usuarios
-            .Where(u => u.ActivoUsuario)
+            .OrderBy(u => u.NombreUsuario)
             .ToListAsync();
     }
 
@@ -132,6 +132,45 @@ public class UsuarioRepository
         }
 
         usuario.PasswordHash = passwordNueva;
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+    public async Task<List<Usuario>> BuscarAsync(string texto)
+    {
+        texto = texto.ToLower();
+
+        return await _context.Usuarios
+
+            .Where(u =>
+
+                u.NombreUsuario.ToLower().Contains(texto)
+
+                ||
+
+                u.ApellidoUsuario.ToLower().Contains(texto)
+
+                ||
+
+                u.EmailUsuario.ToLower().Contains(texto)
+
+            )
+
+            .OrderBy(u => u.NombreUsuario)
+
+            .ToListAsync();
+    }
+
+    public async Task<bool> CambiarEstadoAsync(long id)
+    {
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.IdUsuario == id);
+
+        if (usuario == null)
+            return false;
+
+        usuario.ActivoUsuario = !usuario.ActivoUsuario;
 
         await _context.SaveChangesAsync();
 

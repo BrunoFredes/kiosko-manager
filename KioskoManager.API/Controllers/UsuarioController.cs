@@ -45,36 +45,46 @@ public class UsuariosController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> CreateUsuario(
-        Usuario usuario
-    )
+    CreateUsuarioDto dto
+)
     {
+        var usuario = new Usuario
+        {
+            NombreUsuario = dto.NombreUsuario,
+            ApellidoUsuario = dto.ApellidoUsuario,
+            EmailUsuario = dto.EmailUsuario,
+            PasswordHash = dto.Password, // después lo vamos a hashear
+            RolUsuario = dto.RolUsuario,
+            ActivoUsuario = true,
+            FechaCreacionUsuario = DateTime.UtcNow
+        };
+
         var usuarioCreado =
             await _usuarioRepository.CreateAsync(usuario);
 
-        return CreatedAtAction(
-            nameof(GetUsuarioById),
-            new { id = usuarioCreado.IdUsuario },
-            usuarioCreado
-        );
+        return Ok(usuarioCreado);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUsuario(
-        long id,
-        Usuario usuario
-    )
+    long id,
+    UpdateUsuarioDto dto
+)
     {
-        usuario.IdUsuario = id;
+        var usuario =
+            await _usuarioRepository.GetByIdAsync(id);
 
-        var usuarioActualizado =
-            await _usuarioRepository.UpdateAsync(usuario);
-
-        if (usuarioActualizado == null)
-        {
+        if (usuario == null)
             return NotFound();
-        }
 
-        return Ok(usuarioActualizado);
+        usuario.NombreUsuario = dto.NombreUsuario;
+        usuario.ApellidoUsuario = dto.ApellidoUsuario;
+        usuario.EmailUsuario = dto.EmailUsuario;
+        usuario.RolUsuario = dto.RolUsuario;
+
+        await _usuarioRepository.UpdateAsync(usuario);
+
+        return Ok(usuario);
     }
 
     [HttpDelete("{id}")]
@@ -116,5 +126,24 @@ CambiarPassword(
 
         return Ok(
             "Contraseña actualizada");
+    }
+    [HttpGet("buscar")]
+    public async Task<IActionResult> Buscar(string texto)
+    {
+        var usuarios =
+            await _usuarioRepository.BuscarAsync(texto);
+
+        return Ok(usuarios);
+    }
+    [HttpPatch("{id}/activo")]
+    public async Task<IActionResult> CambiarEstado(long id)
+    {
+        var resultado =
+            await _usuarioRepository.CambiarEstadoAsync(id);
+
+        if (!resultado)
+            return NotFound();
+
+        return Ok();
     }
 }
