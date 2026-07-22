@@ -1,0 +1,83 @@
+.movimientos-page{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+    height:calc(100vh - 120px);
+
+}
+
+.tabla-container{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    border-radius:16px;
+
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow);
+
+}
+
+.tabla-movimientos{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.tabla-movimientos thead{
+
+    position:sticky;
+
+    top:0;
+
+    background:var(--surface);
+
+    z-index:10;
+
+}
+
+.tabla-movimientos th{
+
+    padding:16px;
+
+    text-align:left;
+
+    border-bottom:2px solid var(--border);
+
+}
+
+.tabla-movimientos td{
+
+    padding:16px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.tabla-movimientos tbody tr{
+
+    transition:.18s;
+
+}
+
+.tabla-movimientos tbody tr:hover{
+
+    background:rgba(13,110,253,.06);
+
+}
+
+[data-theme="dark"] .tabla-movimientos tbody tr:hover{
+
+    background:rgba(255,255,255,.05);
+
+}

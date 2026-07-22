@@ -4,7 +4,7 @@ import Login from "./pages/Login/Login";
 import Caja from "./pages/Caja/Caja";
 import Productos from "./pages/Productos/Productos";
 import Usuarios from "./pages/Usuarios/Usuarios";
-
+import Movimientos from "./pages/Movimientos/Movimientos";
 import AppLayout from "./layouts/AppLayout";
 
 import { useAuth } from "./context/AuthContext";
@@ -41,6 +41,10 @@ function App() {
                 <Route
                     path="*"
                     element={<Navigate to="/caja" />}
+                />
+                <Route
+                    path="/movimientos"
+                    element={<Movimientos />}
                 />
 
             </Route>

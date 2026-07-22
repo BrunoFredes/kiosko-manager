@@ -5,28 +5,21 @@ namespace KioskoManager.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MovimientosStockController
-    : ControllerBase
+public class MovimientosStockController : ControllerBase
 {
-    private readonly
-        IMovimientoStockRepository
-            _repository;
+    private readonly IMovimientoStockRepository _repository;
 
     public MovimientosStockController(
-        IMovimientoStockRepository
-            repository
-    )
+        IMovimientoStockRepository repository)
     {
         _repository = repository;
     }
 
     [HttpGet]
-    public async Task<IActionResult>
-        GetMovimientos()
+    public async Task<IActionResult> GetMovimientos()
     {
         var movimientos =
-            await _repository
-                .GetAllAsync();
+            await _repository.GetAllAsync();
 
         return Ok(movimientos);
     }

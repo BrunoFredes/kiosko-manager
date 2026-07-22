@@ -40,7 +40,7 @@ builder.Services.AddScoped<IVentaRepository, VentaRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IMovimientoStockRepository, MovimientoStockRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
-
+builder.Services.AddScoped<IMovimientoStockRepository,MovimientoStockRepository>();
 var app = builder.Build();
 
 // Swagger

@@ -98,7 +98,16 @@ function Sidebar() {
                         Stock
 
                     </Link>
+                    <Link
+                        to="/movimientos"
+                        className="menu-item"
+                    >
 
+                        <FaChartBar />
+
+                        Movimientos
+
+                    </Link>
                     <Link
                         to="/usuarios"
                         className="menu-item"
@@ -114,6 +123,7 @@ function Sidebar() {
                         to="/configuracion"
                         className="menu-item"
                     >
+                    
 
                         <FaCog />
 
