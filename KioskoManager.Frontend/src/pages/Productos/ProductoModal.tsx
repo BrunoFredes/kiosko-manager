@@ -5,6 +5,7 @@ import {
     crearProducto,
     actualizarProducto,
 } from "../../services/productoService";
+import { useAuth } from "../../context/AuthContext";
 
 import { obtenerCategorias } from "../../services/categoriaService";
 
@@ -45,12 +46,14 @@ const productoVacio: Producto = {
 function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
 
     const esEdicion = !!producto;
+    const { usuario } = useAuth();
 
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [formData, setFormData] = useState<Producto>(productoVacio);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
+    const [mostrarModalStock, setMostrarModalStock] = useState(false);
+    const [observacionStock, setObservacionStock] = useState("");
     // Control para doble Enter
     const lastEnterTime = useRef(0);
 
@@ -120,7 +123,6 @@ function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
         }
     };
     const productoEnviar = {
-
         ...formData,
 
         precioCompra: Number(formData.precioCompra),
@@ -131,34 +133,77 @@ function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
 
         stockMinimo: Number(formData.stockMinimo),
 
-        idCategoria: Number(formData.idCategoria)
+        idCategoria: Number(formData.idCategoria),
 
+        idUsuario: usuario?.idUsuario,
+
+        observacionStock
     };
     const handleSubmit = async (e: React.FormEvent) => {
+
         e.preventDefault();
+
         if (loading) return;
 
+        const cambioStock =
+            esEdicion &&
+            producto &&
+            Number(producto.stockActual) !== Number(formData.stockActual);
+
+        if (cambioStock && observacionStock.trim() === "") {
+
+            setMostrarModalStock(true);
+
+            return;
+
+        }
+
         setLoading(true);
+
         setError(null);
 
         try {
+
             if (esEdicion && producto?.idProducto !== undefined) {
-                await actualizarProducto(producto.idProducto, productoEnviar);
+
+                await actualizarProducto(
+                    producto.idProducto,
+                    productoEnviar
+                );
+
             } else {
+
                 await crearProducto(productoEnviar);
+
             }
 
-            onGuardado();
-            onCerrar();
-            toast.success(`Producto ${esEdicion ? "actualizado" : "creado"} exitosamente`);
-        } catch (err: any) {
-            toast.error(`Error: ${err.message || "No se pudo guardar el producto"}`);
-            setError(err.message || "No se pudo guardar el producto");
-        } finally {
-            setLoading(false);
-        }
-    };
+            toast.success(
+                `Producto ${esEdicion ? "actualizado" : "creado"} exitosamente`
+            );
 
+            setMostrarModalStock(false);
+
+            setObservacionStock("");
+
+            onGuardado();
+
+            onCerrar();
+
+        } catch (err: any) {
+
+            toast.error(
+                `Error: ${err.message || "No se pudo guardar el producto"}`
+            );
+
+            setError(err.message || "No se pudo guardar el producto");
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
     if (!abierto) return null;
 
     return (
@@ -246,6 +291,104 @@ function ProductoModal({ abierto, producto, onCerrar, onGuardado }: Props) {
                 <small style={{ display: 'block', textAlign: 'center', margin: '10px 0', color: '#555' }}>
                     Presiona <strong>Enter dos veces</strong> para guardar
                 </small>
+                {
+                    mostrarModalStock && (
+
+                    <div className="modal-overlay">
+
+                        <div
+                            className="modal-content"
+                            style={{ maxWidth: 450 }}
+                        >
+
+                            <div className="modal-header">
+
+                                <h3>Movimiento de Stock</h3>
+
+                            </div>
+
+                            <div className="modal-body">
+
+                                <p>
+
+                                    Detectamos que modificaste el stock del producto.
+
+                                </p>
+
+                                <p>
+
+                                    Escribí el motivo del movimiento.
+
+                                </p>
+
+                                <textarea
+
+                                    value={observacionStock}
+
+                                    onChange={(e)=>
+                                        setObservacionStock(e.target.value)
+                                    }
+
+                                    rows={4}
+
+                                    style={{
+                                        width:"100%",
+                                        resize:"none",
+                                        borderRadius:"10px",
+                                        padding:"10px",
+                                        marginTop:"10px"
+                                    }}
+
+                                />
+
+                            </div>
+
+                            <div className="modal-footer">
+
+                                <button
+
+                                    className="btn-cancelar"
+
+                                    onClick={() => {
+
+                                        setMostrarModalStock(false);
+
+                                        setObservacionStock("");
+
+                                    }}
+
+                                >
+
+                                    Cancelar
+
+                                </button>
+
+                                <button
+
+                                    className="btn-guardar"
+
+                                    onClick={() => {
+
+                                        handleSubmit({
+                                            preventDefault(){}
+
+                                        } as React.FormEvent);
+
+                                    }}
+
+                                >
+
+                                    Guardar
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    )}
             </div>
         </div>
     );

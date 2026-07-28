@@ -102,13 +102,12 @@ public class ProductosController : ControllerBase
 
     [HttpPut("{id}")]
     public async Task<IActionResult> ActualizarProducto(
-        long id,
-        UpdateProductoDto dto
-    )
+    long id,
+    UpdateProductoDto dto
+)
     {
         var producto =
-            await _productoRepository
-                .GetByIdAsync(id);
+            await _productoRepository.GetByIdAsync(id);
 
         if (producto == null)
         {
@@ -116,6 +115,8 @@ public class ProductosController : ControllerBase
                 "Producto no encontrado."
             );
         }
+
+        var stockAnterior = producto.StockActual;
 
         producto.NombreProducto = dto.NombreProducto;
         producto.CodigoBarras = dto.CodigoBarras;
@@ -125,8 +126,34 @@ public class ProductosController : ControllerBase
         producto.StockMinimo = dto.StockMinimo;
         producto.IdCategoria = dto.IdCategoria;
 
-        await _productoRepository
-            .UpdateAsync(producto);
+        if (stockAnterior != dto.StockActual)
+        {
+            var movimiento = new MovimientoStock
+            {
+                IdProducto = producto.IdProducto,
+                IdUsuario = dto.IdUsuario,
+
+                TipoMovimiento =
+                    dto.StockActual > stockAnterior
+                        ? "INGRESO"
+                        : "EGRESO",
+
+                Cantidad =
+                    Math.Abs(dto.StockActual - stockAnterior),
+
+                StockAnterior = stockAnterior,
+
+                StockNuevo = dto.StockActual,
+
+                Observacion = dto.ObservacionStock,
+
+                FechaMovimiento = DateTime.UtcNow
+            };
+
+            _context.MovimientosStock.Add(movimiento);
+        }
+
+        await _productoRepository.UpdateAsync(producto);
 
         return Ok(producto);
     }

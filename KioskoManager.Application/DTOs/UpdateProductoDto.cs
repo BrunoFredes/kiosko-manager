@@ -15,4 +15,7 @@ public class UpdateProductoDto
     public int StockMinimo { get; set; }
 
     public long IdCategoria { get; set; }
+
+    public string? ObservacionStock { get; set; }
+    public long IdUsuario { get; set; }
 }
