@@ -3,19 +3,19 @@ import "./Movimientos.css";
 
 import {
     obtenerMovimientos,
-    type MovimientoStock
+    type Movimiento
 } from "../../services/movimientoService";
 
 function Movimientos() {
 
-    const [movimientos,
-        setMovimientos] =
-        useState<MovimientoStock[]>([]);
+    const [movimientos, setMovimientos] =
+        useState<Movimiento[]>([]);
+
+    const [ventasAbiertas, setVentasAbiertas] =
+        useState<number[]>([]);
 
     useEffect(() => {
-
         cargarMovimientos();
-
     }, []);
 
     async function cargarMovimientos() {
@@ -28,7 +28,6 @@ function Movimientos() {
             setMovimientos(data);
 
         }
-
         catch (error) {
 
             console.error(error);
@@ -37,11 +36,41 @@ function Movimientos() {
 
     }
 
+    function toggleVenta(idVenta: number) {
+
+        if (ventasAbiertas.includes(idVenta)) {
+
+            setVentasAbiertas(
+                ventasAbiertas.filter(x => x !== idVenta)
+            );
+
+        } else {
+
+            setVentasAbiertas([
+                ...ventasAbiertas,
+                idVenta
+            ]);
+
+        }
+
+    }
+
+    // Ventas "padre" (las que tienen monto)
+    const ventas = movimientos.filter(m =>
+        m.tipo === "VENTA" &&
+        m.monto != null
+    );
+
+    // Ingresos / egresos
+    const otrosMovimientos = movimientos.filter(m =>
+        m.tipo !== "VENTA"
+    );
+
     return (
 
         <div className="movimientos-page">
 
-            <h2>Movimientos</h2>
+            <h2>Historial</h2>
 
             <div className="tabla-container">
 
@@ -53,17 +82,13 @@ function Movimientos() {
 
                             <th>Fecha</th>
 
-                            <th>Producto</th>
+                            <th>Tipo</th>
 
                             <th>Usuario</th>
 
-                            <th>Tipo</th>
+                            <th>Descripción</th>
 
-                            <th>Cantidad</th>
-
-                            <th>Stock</th>
-
-                            <th>Observación</th>
+                            <th>Monto</th>
 
                         </tr>
 
@@ -73,37 +98,158 @@ function Movimientos() {
 
                         {
 
-                            movimientos.map(m => (
+                            ventas.map(venta => {
 
-                                <tr key={m.idMovimientoStock}>
+                                const productos =
+                                    movimientos.filter(p =>
+                                        p.tipo === "VENTA" &&
+                                        p.monto == null &&
+                                        p.idVenta === venta.idVenta
+                                    );
+
+                                const abierta =
+                                    ventasAbiertas.includes(
+                                        venta.idVenta!
+                                    );
+
+                                return (
+
+                                    <>
+                                        <tr
+
+                                            key={venta.idVenta}
+
+                                            className="fila-venta"
+
+                                            onClick={() =>
+                                                toggleVenta(
+                                                    venta.idVenta!
+                                                )
+                                            }
+
+                                        >
+
+                                            <td>
+
+                                                {
+                                                    new Date(
+                                                        venta.fecha
+                                                    ).toLocaleString()
+                                                }
+
+                                            </td>
+
+                                            <td>
+
+                                                {abierta ? "▼" : "▶"} Venta
+
+                                            </td>
+
+                                            <td>
+
+                                                {venta.usuario}
+
+                                            </td>
+
+                                            <td>
+
+                                                {venta.descripcion}
+
+                                            </td>
+
+                                            <td>
+
+                                                ${
+                                                    venta.monto?.toFixed(2)
+                                                }
+
+                                            </td>
+
+                                        </tr>
+
+                                        {
+
+                                            abierta &&
+
+                                            productos.map(prod => (
+
+                                                <tr
+
+                                                    key={prod.idMovimientoStock}
+
+                                                    className="detalle-venta"
+
+                                                >
+
+                                                    <td></td>
+
+                                                    <td
+                                                        colSpan={3}
+                                                    >
+
+                                                        {prod.descripcion}
+
+                                                    </td>
+
+                                                    <td>
+
+                                                        -
+
+                                                    </td>
+
+                                                </tr>
+
+                                            ))
+
+                                        }
+
+                                    </>
+
+                                );
+
+                            })
+
+                        }
+
+                        {
+
+                            otrosMovimientos.map((m, index) => (
+
+                                <tr key={index}>
 
                                     <td>
 
-                                        {new Date(
-                                            m.fechaMovimiento
-                                        ).toLocaleString()}
+                                        {
+                                            new Date(
+                                                m.fecha
+                                            ).toLocaleString()
+                                        }
 
                                     </td>
-
-                                    <td>{m.nombreProducto}</td>
-
-                                    <td>{m.nombreUsuario}</td>
-
-                                    <td>{m.tipoMovimiento}</td>
-
-                                    <td>{m.cantidad}</td>
 
                                     <td>
 
-                                        {m.stockAnterior}
-
-                                        {" → "}
-
-                                        {m.stockNuevo}
+                                        {m.tipo}
 
                                     </td>
 
-                                    <td>{m.observacion}</td>
+                                    <td>
+
+                                        {m.usuario}
+
+                                    </td>
+
+                                    <td>
+
+                                        {m.descripcion}
+
+                                    </td>
+
+                                    <td>
+
+                                        -
+
+                                    </td>
 
                                 </tr>
 

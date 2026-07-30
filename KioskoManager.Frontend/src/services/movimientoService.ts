@@ -1,35 +1,31 @@
 const API = "https://localhost:7268/api";
 
-export interface MovimientoStock {
+export interface Movimiento {
 
-    idMovimientoStock: number;
+    fecha: string;
 
-    fechaMovimiento: string;
+    tipo: string;
 
-    nombreProducto: string;
+    usuario: string;
 
-    nombreUsuario: string;
+    monto: number | null;
 
-    tipoMovimiento: string;
+    descripcion: string;
 
-    cantidad: number;
+    idReferencia: number;
 
-    stockAnterior: number;
-
-    stockNuevo: number;
-
-    observacion: string;
-
+    idVenta?: number;
+    idMovimientoStock?: number;
 }
 
-export async function obtenerMovimientos(): Promise<MovimientoStock[]> {
+export async function obtenerMovimientos(): Promise<Movimiento[]> {
 
-    const response = await fetch(`${API}/MovimientosStock`);
+    const response = await fetch(`${API}/Movimientos`);
 
     if (!response.ok) {
 
         throw new Error(
-            "No se pudieron cargar los movimientos"
+            "No se pudieron cargar los movimientos."
         );
 
     }

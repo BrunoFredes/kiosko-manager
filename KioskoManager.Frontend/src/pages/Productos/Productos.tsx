@@ -6,9 +6,8 @@ import { cambiarEstadoProducto } from "../../services/productoService";
 import "./Productos.css";
 import ProductoModal from "./ProductoModal";
 
-interface ProductoListItem {
+interface Producto {
     idProducto: number;
-    idCategoria: number;
     nombreProducto: string;
     codigoBarras: string;
     precioCompra: number;
@@ -19,9 +18,9 @@ interface ProductoListItem {
 }
 
 function Productos() {
-    const [productos, setProductos] = useState<ProductoListItem[]>([]);
+    const [productos, setProductos] = useState<Producto[]>([]);
     const [mostrarModal, setMostrarModal] = useState(false);
-    const [productoSeleccionado, setProductoSeleccionado] = useState<ProductoListItem | null>(null);
+    const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
     const [busqueda, setBusqueda] = useState<string>("");
 
     const searchInputRef = useRef<HTMLInputElement>(null);
