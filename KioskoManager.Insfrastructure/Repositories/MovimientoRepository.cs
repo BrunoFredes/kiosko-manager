@@ -39,13 +39,17 @@ public class MovimientoRepository : IMovimientoRepository
                 .Select(m => new MovimientoDto
                 {
                     Fecha = m.FechaMovimiento,
+
                     Tipo = m.TipoMovimiento,
+
                     Usuario =
                         m.Usuario.NombreUsuario + " " +
                         m.Usuario.ApellidoUsuario,
-                    Monto = null,
-                    Descripcion =
-                        $"{m.Producto.NombreProducto} - {m.Observacion}",
+
+                    Monto = m.Monto,
+
+                    Descripcion = m.Observacion,
+
                     IdReferencia = m.IdMovimientoStock
                 })
                 .ToListAsync();

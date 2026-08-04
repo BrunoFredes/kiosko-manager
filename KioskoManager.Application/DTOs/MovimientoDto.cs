@@ -15,4 +15,5 @@ public class MovimientoDto
     public long IdReferencia { get; set; }
 
     public long? IdVenta { get; set; }
+
 }

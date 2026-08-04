@@ -7,7 +7,7 @@ public class MovimientoStock
     [Key]
     public long IdMovimientoStock { get; set; }
 
-    public long IdProducto { get; set; }
+    public long? IdProducto { get; set; }
 
 
     [JsonIgnore]
@@ -28,4 +28,6 @@ public class MovimientoStock
     public string? Observacion { get; set; }
 
     public DateTime FechaMovimiento { get; set; }
+
+    public decimal? Monto { get; set; }
 }

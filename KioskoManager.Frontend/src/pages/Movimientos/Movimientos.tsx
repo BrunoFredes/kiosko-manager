@@ -24,6 +24,8 @@ function Movimientos() {
     const [movimientos, setMovimientos] =
         useState<Movimiento[]>([]);
 
+    
+        
     const [ventaExpandida, setVentaExpandida] =
         useState<string | null>(null);
 
@@ -93,6 +95,8 @@ function Movimientos() {
                                     const abierta =
                                         ventaExpandida === numeroVenta;
 
+                                    const descripcionLimpia =m.descripcion.replace(/ - Venta #\d+$/, "");
+
                                     const detalles =
                                         movimientos.filter(x =>
 
@@ -139,12 +143,14 @@ function Movimientos() {
 
                                                 <td>{m.usuario}</td>
 
-                                                <td>{m.descripcion}</td>
+                                                
+
+                                                <td>{descripcionLimpia}</td>
 
                                                 <td>
-
-                                                    ${m.monto?.toFixed(2)}
-
+                                                    {m.monto != null
+                                                        ? `$${m.monto.toFixed(2)}`
+                                                        : "-"}
                                                 </td>
 
                                             </tr>
@@ -180,8 +186,11 @@ function Movimientos() {
 
                                                         </td>
 
-                                                        <td>-</td>
-
+                                                        <td>-</td><td>
+                                                            {d.monto != null
+                                                                ? `$${d.monto.toFixed(2)}`
+                                                                : "-"}
+                                                        </td>
                                                     </tr>
 
                                                 ))
