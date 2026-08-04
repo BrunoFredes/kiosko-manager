@@ -115,13 +115,14 @@ public class VentaRepository : IVentaRepository
                 if (detalle.IdProducto == null)
                 {
                     var movimientoManual = new MovimientoStock
-                    {
-                        IdProducto = null,
-                        IdUsuario = ventaDto.IdUsuario,
-                        TipoMovimiento = "VENTA",
-                        Cantidad = detalle.Cantidad,
-                        StockAnterior = 0,
-                        StockNuevo = 0,
+                            {
+                                IdProducto = null,
+                                IdUsuario = ventaDto.IdUsuario,
+                                TipoMovimiento = "VENTA",
+                                Cantidad = detalle.Cantidad,
+                                StockAnterior = 0,
+                                StockNuevo = 0,
+                        Monto = detalle.Subtotal,
 
                         Observacion =
                             detalle.Cantidad > 1
@@ -129,7 +130,7 @@ public class VentaRepository : IVentaRepository
                                 : $"{detalle.DescripcionManual} - Venta #{venta.IdVenta}",
 
                         FechaMovimiento = DateTime.UtcNow
-                    };
+                            };
 
                     _context.MovimientosStock.Add(movimientoManual);
 
@@ -147,27 +148,24 @@ public class VentaRepository : IVentaRepository
                 producto.StockActual -=
                     detalle.Cantidad;
 
-                var movimiento =
-                    new MovimientoStock
-                    {
-                        IdProducto = producto.IdProducto,
-                        IdUsuario = ventaDto.IdUsuario,
+                var movimiento = new MovimientoStock
+                {
+                    IdProducto = producto.IdProducto,
+                    IdUsuario = ventaDto.IdUsuario,
+                    TipoMovimiento = "VENTA",
+                    Cantidad = detalle.Cantidad,
+                    StockAnterior = stockAnterior,
+                    StockNuevo = producto.StockActual,
+                  
+                    Monto = detalle.Subtotal,
 
-                        TipoMovimiento = "VENTA",
+                    Observacion =
+                        detalle.Cantidad > 1
+                            ? $"{detalle.Cantidad} × {producto.NombreProducto} - Venta #{venta.IdVenta}"
+                            : $"{producto.NombreProducto} - Venta #{venta.IdVenta}",
 
-                        Cantidad = detalle.Cantidad,
-
-                        StockAnterior = stockAnterior,
-
-                        StockNuevo = producto.StockActual,
-
-                        Observacion =
-                            detalle.Cantidad > 1
-                                ? $"{detalle.Cantidad} × {producto.NombreProducto} - Venta #{venta.IdVenta}"
-                                : $"{producto.NombreProducto} - Venta #{venta.IdVenta}",
-
-                        FechaMovimiento = DateTime.UtcNow
-                    };
+                    FechaMovimiento = DateTime.UtcNow
+                };
                 _context.MovimientosStock.Add(movimiento);
             }
 

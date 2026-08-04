@@ -192,6 +192,10 @@ namespace KioskoManager.Infrastructure.Data
                 entity.Property(e => e.FechaMovimiento)
                     .HasColumnName("fecha_movimiento");
 
+                entity.Property(e => e.Monto)
+                    .HasColumnName("monto");
+
+
                 entity.HasOne(e => e.Producto)
                     .WithMany(p => p.MovimientosStock)
                     .HasForeignKey(e => e.IdProducto);
@@ -199,6 +203,8 @@ namespace KioskoManager.Infrastructure.Data
                 entity.HasOne(e => e.Usuario)
                     .WithMany(u => u.MovimientosStock)
                     .HasForeignKey(e => e.IdUsuario);
+
+               
             });
         }
 

@@ -14,8 +14,7 @@ function obtenerNumeroVenta(descripcion: string) {
 function esCabeceraVenta(m: Movimiento) {
     return (
         m.tipo === "VENTA" &&
-        m.monto != null &&
-        obtenerNumeroVenta(m.descripcion) !== null
+        /^Venta #\d+$/.test(m.descripcion)
     );
 }
 
@@ -24,8 +23,6 @@ function Movimientos() {
     const [movimientos, setMovimientos] =
         useState<Movimiento[]>([]);
 
-    
-        
     const [ventaExpandida, setVentaExpandida] =
         useState<string | null>(null);
 
@@ -95,19 +92,16 @@ function Movimientos() {
                                     const abierta =
                                         ventaExpandida === numeroVenta;
 
-                                    const descripcionLimpia =m.descripcion.replace(/ - Venta #\d+$/, "");
-
-                                    const detalles =
-                                        movimientos.filter(x =>
-
-                                            x.monto == null &&
-                                            obtenerNumeroVenta(x.descripcion) === numeroVenta
-
-                                        );
+                                    const detalles = movimientos.filter(x =>
+                                        x.tipo === "VENTA" &&
+                                        !esCabeceraVenta(x) &&
+                                        obtenerNumeroVenta(x.descripcion) === numeroVenta
+                                    );
 
                                     return (
 
                                         <>
+
                                             <tr key={index} className="fila-venta">
 
                                                 <td>
@@ -143,14 +137,14 @@ function Movimientos() {
 
                                                 <td>{m.usuario}</td>
 
-                                                
-
-                                                <td>{descripcionLimpia}</td>
+                                                <td>{m.descripcion}</td>
 
                                                 <td>
+
                                                     {m.monto != null
                                                         ? `$${m.monto.toFixed(2)}`
                                                         : "-"}
+
                                                 </td>
 
                                             </tr>
@@ -186,11 +180,14 @@ function Movimientos() {
 
                                                         </td>
 
-                                                        <td>-</td><td>
+                                                        <td>
+
                                                             {d.monto != null
                                                                 ? `$${d.monto.toFixed(2)}`
                                                                 : "-"}
+
                                                         </td>
+
                                                     </tr>
 
                                                 ))

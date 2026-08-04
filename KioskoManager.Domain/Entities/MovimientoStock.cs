@@ -30,4 +30,5 @@ public class MovimientoStock
     public DateTime FechaMovimiento { get; set; }
 
     public decimal? Monto { get; set; }
+
 }

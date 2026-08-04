@@ -28,7 +28,8 @@ public class MovimientoRepository : IMovimientoRepository
                         v.Usuario.ApellidoUsuario,
                     Monto = v.TotalVenta,
                     Descripcion = $"Venta #{v.IdVenta}",
-                    IdReferencia = v.IdVenta
+                    IdReferencia = v.IdVenta,
+                    IdVenta = v.IdVenta
                 })
                 .ToListAsync();
 
@@ -48,7 +49,7 @@ public class MovimientoRepository : IMovimientoRepository
 
                     Monto = m.Monto,
 
-                    Descripcion = m.Observacion,
+                    Descripcion = m.Observacion ?? "",
 
                     IdReferencia = m.IdMovimientoStock
                 })
