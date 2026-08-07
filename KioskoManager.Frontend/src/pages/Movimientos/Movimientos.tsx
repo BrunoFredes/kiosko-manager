@@ -26,6 +26,9 @@ function Movimientos() {
     const [ventaExpandida, setVentaExpandida] =
         useState<string | null>(null);
 
+    const [movimientoExpandido, setMovimientoExpandido] =
+    useState<number | null>(null);
+
     useEffect(() => {
         cargarMovimientos();
     }, []);
@@ -203,43 +206,83 @@ function Movimientos() {
                                 // INGRESOS / EGRESOS
                                 if (m.tipo !== "VENTA") {
 
+                                    const abierto =
+                                        movimientoExpandido === m.idReferencia;
+
                                     return (
+                                        <>
+                                            <tr key={m.idReferencia}>
 
-                                        <tr key={index}>
+                                                <td>
+                                                    {new Date(m.fecha).toLocaleString()}
+                                                </td>
 
-                                            <td>
+                                                <td>
 
-                                                {new Date(
-                                                    m.fecha
-                                                ).toLocaleString()}
+                                                    <button
+                                                        className="btn-expandir"
+                                                        onClick={() =>
+                                                            setMovimientoExpandido(
+                                                                abierto
+                                                                    ? null
+                                                                    : m.idReferencia
+                                                            )
+                                                        }
+                                                    >
+                                                        {abierto ? "▼" : "▶"} {m.tipo}
+                                                    </button>
 
-                                            </td>
+                                                </td>
 
-                                            <td>
+                                                <td>{m.usuario}</td>
 
-                                                {m.tipo}
+                                                <td>
+                                                    {m.nombreProducto ?? "-"}
+                                                </td>
 
-                                            </td>
+                                                <td
+                                                    className={
+                                                        m.tipo === "INGRESO"
+                                                            ? "positivo"
+                                                            : "negativo"
+                                                    }
+                                                >
+                                                    {m.tipo === "INGRESO" ? "+" : "-"}
+                                                    {m.cantidad}
+                                                </td>
 
-                                            <td>
+                                            </tr>
 
-                                                {m.usuario}
+                                            {
+                                                abierto &&
 
-                                            </td>
+                                                <tr className="detalle-venta">
 
-                                            <td>
+                                                    <td></td>
 
-                                                {m.descripcion}
+                                                    <td
+                                                        style={{
+                                                            paddingLeft: "30px"
+                                                        }}
+                                                    >
+                                                        Observación
+                                                    </td>
 
-                                            </td>
+                                                    <td></td>
 
-                                            <td>-</td>
+                                                    <td colSpan={2}>
+                                                        {m.descripcion}
+                                                    </td>
 
-                                        </tr>
+                                                </tr>
+                                            }
 
+                                        </>
                                     );
 
                                 }
+
+                                
 
                                 // LOS DETALLES DE VENTA NO SE PINTAN AQUÍ
                                 return null;

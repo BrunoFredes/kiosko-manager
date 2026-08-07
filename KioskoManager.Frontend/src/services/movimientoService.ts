@@ -16,6 +16,10 @@ export interface Movimiento {
 
     idVenta?: number;
     idMovimientoStock?: number;
+
+    cantidad: number;
+
+    nombreProducto: string;
 }
 
 export async function obtenerMovimientos(): Promise<Movimiento[]> {

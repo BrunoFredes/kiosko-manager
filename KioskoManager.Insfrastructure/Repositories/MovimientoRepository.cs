@@ -51,7 +51,15 @@ public class MovimientoRepository : IMovimientoRepository
 
                     Descripcion = m.Observacion ?? "",
 
-                    IdReferencia = m.IdMovimientoStock
+                    IdReferencia = m.IdMovimientoStock,
+
+                    NombreProducto =
+                        m.Producto != null
+                            ? m.Producto.NombreProducto
+                            : null,
+
+                    Cantidad = m.Cantidad,
+
                 })
                 .ToListAsync();
 
