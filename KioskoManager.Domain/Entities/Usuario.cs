@@ -22,6 +22,11 @@ namespace KioskoManager.Domain.Entities
 
         public bool ActivoUsuario { get; set; }
 
+        public ICollection<Caja> CajasAbiertas { get; set; }
+    = new List<Caja>();
+
+        public ICollection<Caja> CajasCerradas { get; set; }
+            = new List<Caja>();
         public DateTime FechaCreacionUsuario { get; set; }
 
         [JsonIgnore]

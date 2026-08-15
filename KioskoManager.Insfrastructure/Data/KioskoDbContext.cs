@@ -195,6 +195,8 @@ namespace KioskoManager.Infrastructure.Data
                 entity.Property(e => e.Monto)
                     .HasColumnName("monto");
 
+                entity.Property(e => e.IdVenta)
+                    .HasColumnName("id_venta");
 
                 entity.HasOne(e => e.Producto)
                     .WithMany(p => p.MovimientosStock)
@@ -204,7 +206,93 @@ namespace KioskoManager.Infrastructure.Data
                     .WithMany(u => u.MovimientosStock)
                     .HasForeignKey(e => e.IdUsuario);
 
-               
+                entity.HasOne(e => e.Venta)
+                    .WithMany()
+                    .HasForeignKey(e => e.IdVenta)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+            modelBuilder.Entity<Caja>(entity =>
+            {
+                entity.ToTable("Cajas");
+
+                entity.HasKey(e => e.IdCaja);
+
+                entity.Property(e => e.IdCaja)
+                    .HasColumnName("id_caja");
+
+                entity.Property(e => e.IdUsuarioApertura)
+                    .HasColumnName("id_usuario_apertura");
+
+                entity.Property(e => e.FechaApertura)
+                    .HasColumnName("fecha_apertura");
+
+                entity.Property(e => e.MontoInicial)
+                    .HasColumnName("monto_inicial")
+                    .HasPrecision(18, 2);
+
+                entity.Property(e => e.FechaCierre)
+                    .HasColumnName("fecha_cierre");
+
+                entity.Property(e => e.MontoEsperado)
+                    .HasColumnName("monto_esperado")
+                    .HasPrecision(18, 2);
+
+                entity.Property(e => e.MontoFinal)
+                    .HasColumnName("monto_final")
+                    .HasPrecision(18, 2);
+
+                entity.Property(e => e.Diferencia)
+                    .HasColumnName("diferencia")
+                    .HasPrecision(18, 2);
+
+                entity.Property(e => e.Estado)
+                    .HasColumnName("estado");
+
+                entity.Property(e => e.IdUsuarioCierre)
+                    .HasColumnName("id_usuario_cierre");
+
+                entity.Property(e => e.Observacion)
+                    .HasColumnName("observacion");
+
+                entity.HasOne(e => e.UsuarioApertura)
+                    .WithMany(u => u.CajasAbiertas)
+                    .HasForeignKey(e => e.IdUsuarioApertura)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.UsuarioCierre)
+                    .WithMany(u => u.CajasCerradas)
+                    .HasForeignKey(e => e.IdUsuarioCierre)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+            modelBuilder.Entity<MovimientoCaja>(entity =>
+            {
+                entity.ToTable("Movimientos_Caja");
+
+                entity.HasKey(e => e.IdMovimientoCaja);
+
+                entity.Property(e => e.IdMovimientoCaja)
+                    .HasColumnName("id_movimiento_caja");
+
+                entity.Property(e => e.IdCaja)
+                    .HasColumnName("id_caja");
+
+                entity.Property(e => e.TipoMovimiento)
+                    .HasColumnName("tipo_movimiento");
+
+                entity.Property(e => e.Descripcion)
+                    .HasColumnName("descripcion");
+
+                entity.Property(e => e.Monto)
+                    .HasColumnName("monto")
+                    .HasPrecision(18, 2);
+
+                entity.Property(e => e.FechaMovimiento)
+                    .HasColumnName("fecha_movimiento");
+
+                entity.HasOne(e => e.Caja)
+                    .WithMany(c => c.Movimientos)
+                    .HasForeignKey(e => e.IdCaja)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
 
@@ -216,6 +304,10 @@ namespace KioskoManager.Infrastructure.Data
         public DbSet<Venta> Ventas { get; set; }
 
         public DbSet<DetalleVenta> DetalleVenta { get; set; }
+
+        public DbSet<Caja> Cajas { get; set; }
+
+        public DbSet<MovimientoCaja> MovimientosCaja { get; set; }
 
         public DbSet<MovimientoStock>
             MovimientosStock

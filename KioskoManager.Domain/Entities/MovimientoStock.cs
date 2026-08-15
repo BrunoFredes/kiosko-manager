@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+
 namespace KioskoManager.Domain.Entities;
 
 public class MovimientoStock
@@ -9,9 +10,8 @@ public class MovimientoStock
 
     public long? IdProducto { get; set; }
 
-
     [JsonIgnore]
-    public Producto? Producto { get; set; } = null!;
+    public Producto? Producto { get; set; }
 
     public long IdUsuario { get; set; }
 
@@ -31,4 +31,8 @@ public class MovimientoStock
 
     public decimal? Monto { get; set; }
 
+    // Relación opcional con una venta
+    public long? IdVenta { get; set; }
+
+    public Venta? Venta { get; set; }
 }
