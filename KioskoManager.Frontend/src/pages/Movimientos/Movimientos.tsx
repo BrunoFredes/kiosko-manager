@@ -5,6 +5,7 @@ import {
     obtenerMovimientos,
     type Movimiento
 } from "../../services/movimientoService";
+import GestionCaja from "../GestionCaja/GestionCaja";
 
 function obtenerNumeroVenta(descripcion: string) {
     const match = descripcion.match(/Venta #(\d+)/);
@@ -25,6 +26,9 @@ function Movimientos() {
 
     const [ventaExpandida, setVentaExpandida] =
         useState<string | null>(null);
+
+    const [gestionCajaAbierta, setGestionCajaAbierta] =
+    useState(false);
 
     const [movimientoExpandido, setMovimientoExpandido] =
     useState<number | null>(null);
@@ -57,6 +61,27 @@ function Movimientos() {
         <div className="movimientos-page">
 
             <h2>Historial</h2>
+
+            <div className="acciones-caja">
+
+                <button
+                    type="button"
+                    className="btn-ver-caja"
+                    onClick={() =>
+                        setGestionCajaAbierta(true)
+                    }
+                >
+                    💰 Ver caja
+                </button>
+
+            </div>
+
+            <GestionCaja
+                abierto={gestionCajaAbierta}
+                onCerrar={() =>
+                    setGestionCajaAbierta(false)
+                }
+            />
 
             <div className="tabla-container">
 

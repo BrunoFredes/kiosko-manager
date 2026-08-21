@@ -1,7 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using KioskoManager.Infrastructure.Data;
 using KioskoManager.Application.Interfaces;
+using KioskoManager.Infrastructure.Data;
 using KioskoManager.Infrastructure.Repositories;
+using KioskoManager.Insfrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,7 @@ builder.Services.AddScoped<IMovimientoStockRepository, MovimientoStockRepository
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IMovimientoStockRepository,MovimientoStockRepository>();
 builder.Services.AddScoped<IMovimientoRepository, MovimientoRepository>();
+builder.Services.AddScoped<ICajaRepository, CajaRepository>();
 var app = builder.Build();
 
 // Swagger
