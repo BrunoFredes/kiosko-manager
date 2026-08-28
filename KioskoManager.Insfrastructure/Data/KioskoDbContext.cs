@@ -263,6 +263,13 @@ namespace KioskoManager.Infrastructure.Data
                     .WithMany(u => u.CajasCerradas)
                     .HasForeignKey(e => e.IdUsuarioCierre)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(e => e.FechaApertura)
+                    .HasColumnName("fecha_apertura");
+
+                entity.Property(e => e.FechaCierre)
+                    .HasColumnName("fecha_cierre");
+                    
             });
             modelBuilder.Entity<MovimientoCaja>(entity =>
             {
@@ -293,6 +300,10 @@ namespace KioskoManager.Infrastructure.Data
                     .WithMany(c => c.Movimientos)
                     .HasForeignKey(e => e.IdCaja)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(e => e.FechaMovimiento)
+                    .HasColumnName("fecha_movimiento");
+                    
             });
         }
 

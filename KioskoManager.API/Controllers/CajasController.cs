@@ -70,7 +70,7 @@ public class CajasController : ControllerBase
             // Por ahora usamos un usuario temporal.
             // Después lo reemplazamos por el usuario
             // obtenido desde JWT.
-            long idUsuario = 1;
+            long idUsuario = 3;
 
             var caja =
                 await _cajaRepository

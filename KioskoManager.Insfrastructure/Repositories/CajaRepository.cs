@@ -58,7 +58,7 @@ public class CajaRepository : ICajaRepository
         var caja = new Caja
         {
             IdUsuarioApertura = idUsuario,
-            FechaApertura = DateTime.Now,
+            FechaApertura = DateTime.UtcNow,
             MontoInicial = dto.MontoInicial,
             Estado = "ABIERTA"
         };
@@ -89,7 +89,7 @@ public class CajaRepository : ICajaRepository
         if (dto.MontoFinal < 0)
             return null;
 
-        var fechaCierre = DateTime.Now;
+        var fechaCierre = DateTime.UtcNow;
 
         var montoEsperado =
             await CalcularMontoEsperadoAsync(
