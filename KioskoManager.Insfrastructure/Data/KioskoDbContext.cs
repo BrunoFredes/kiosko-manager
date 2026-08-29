@@ -265,11 +265,13 @@ namespace KioskoManager.Infrastructure.Data
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(e => e.FechaApertura)
-                    .HasColumnName("fecha_apertura");
+                    .HasColumnName("fecha_apertura")
+                    .HasColumnType("timestamp with time zone");
 
                 entity.Property(e => e.FechaCierre)
-                    .HasColumnName("fecha_cierre");
-                    
+                    .HasColumnName("fecha_cierre")
+                    .HasColumnType("timestamp with time zone");
+
             });
             modelBuilder.Entity<MovimientoCaja>(entity =>
             {
@@ -302,8 +304,8 @@ namespace KioskoManager.Infrastructure.Data
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.Property(e => e.FechaMovimiento)
-                    .HasColumnName("fecha_movimiento");
-                    
+                    .HasColumnName("fecha_movimiento")
+                    .HasColumnType("timestamp with time zone");
             });
         }
 

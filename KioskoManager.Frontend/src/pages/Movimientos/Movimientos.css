@@ -167,3 +167,38 @@
 .detalle-venta td:first-child{
     border-left:4px solid #4f46e5;
 }
+.movimientos-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.movimientos-header h2 {
+    margin: 0;
+}
+
+.btn-ver-caja {
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 10px 16px;
+
+    background: #3978c7;
+
+    color: white;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.btn-ver-caja:hover {
+    opacity: 0.9;
+}

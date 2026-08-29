@@ -176,4 +176,49 @@ public class CajasController : ControllerBase
             );
         }
     }
+    // =====================================================
+    // REGISTRAR INGRESO / EGRESO
+    // =====================================================
+
+    [HttpPost("movimiento")]
+    public async Task<IActionResult> RegistrarMovimiento(
+        CrearMovimientoCajaDto dto
+    )
+    {
+        try
+        {
+            // Temporalmente usamos Admin Sistema.
+            // Después lo obtenemos del JWT.
+            long idUsuario = 3;
+
+            var movimiento =
+                await _cajaRepository
+                    .RegistrarMovimientoAsync(
+                        dto,
+                        idUsuario
+                    );
+
+            if (movimiento == null)
+            {
+                return BadRequest(
+                    "No se pudo registrar el movimiento. " +
+                    "Verificá que haya una caja abierta, " +
+                    "que el monto sea mayor a 0 y que el tipo sea INGRESO o EGRESO."
+                );
+            }
+
+            return Ok(movimiento);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(
+                500,
+                new
+                {
+                    mensaje = "Error al registrar movimiento de caja",
+                    detalle = ex.ToString()
+                }
+            );
+        }
+    }
 }

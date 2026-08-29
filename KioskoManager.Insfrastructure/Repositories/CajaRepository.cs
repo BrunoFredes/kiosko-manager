@@ -15,6 +15,10 @@ public class CajaRepository : ICajaRepository
         _context = context;
     }
 
+    // =====================================================
+    // OBTENER CAJA ACTUAL
+    // =====================================================
+
     public async Task<CajaDto?> ObtenerCajaActualAsync()
     {
         var caja = await _context.Cajas
@@ -26,7 +30,7 @@ public class CajaRepository : ICajaRepository
         if (caja == null)
             return null;
 
-        var ahora = DateTime.Now;
+        var ahora = DateTime.UtcNow;
 
         var montoEsperado =
             await CalcularMontoEsperadoAsync(
@@ -41,13 +45,18 @@ public class CajaRepository : ICajaRepository
         return dto;
     }
 
+    // =====================================================
+    // ABRIR CAJA
+    // =====================================================
+
     public async Task<Caja?> AbrirCajaAsync(
         AbrirCajaDto dto,
         long idUsuario
     )
     {
-        var cajaAbierta = await _context.Cajas
-            .AnyAsync(c => c.Estado == "ABIERTA");
+        var cajaAbierta =
+            await _context.Cajas
+                .AnyAsync(c => c.Estado == "ABIERTA");
 
         if (cajaAbierta)
             return null;
@@ -70,6 +79,86 @@ public class CajaRepository : ICajaRepository
         return caja;
     }
 
+    // =====================================================
+    // REGISTRAR INGRESO / EGRESO
+    // =====================================================
+
+    public async Task<MovimientoCajaDto?> RegistrarMovimientoAsync(
+        CrearMovimientoCajaDto dto,
+        long idUsuario
+    )
+    {
+        var caja =
+            await _context.Cajas
+                .FirstOrDefaultAsync(
+                    c => c.Estado == "ABIERTA"
+                );
+
+        if (caja == null)
+            return null;
+
+        if (dto.Monto <= 0)
+            return null;
+
+        var tipo =
+            dto.TipoMovimiento
+                .Trim()
+                .ToUpper();
+
+        if (
+            tipo != "INGRESO" &&
+            tipo != "EGRESO"
+        )
+        {
+            return null;
+        }
+
+        var movimiento = new MovimientoCaja
+        {
+            IdCaja = caja.IdCaja,
+
+            TipoMovimiento = tipo,
+
+            Monto = dto.Monto,
+
+            Descripcion =
+                string.IsNullOrWhiteSpace(dto.Descripcion)
+                    ? null
+                    : dto.Descripcion.Trim(),
+
+            FechaMovimiento = DateTime.UtcNow
+        };
+
+        _context.MovimientosCaja.Add(movimiento);
+
+        await _context.SaveChangesAsync();
+
+        return new MovimientoCajaDto
+        {
+            IdMovimientoCaja =
+                movimiento.IdMovimientoCaja,
+
+            IdCaja =
+                movimiento.IdCaja,
+
+            TipoMovimiento =
+                movimiento.TipoMovimiento,
+
+            Descripcion =
+                movimiento.Descripcion,
+
+            Monto =
+                movimiento.Monto,
+
+            FechaMovimiento =
+                movimiento.FechaMovimiento
+        };
+    }
+
+    // =====================================================
+    // CERRAR CAJA
+    // =====================================================
+
     public async Task<Caja?> CerrarCajaAsync(
         long idCaja,
         CerrarCajaDto dto,
@@ -78,6 +167,7 @@ public class CajaRepository : ICajaRepository
     {
         var caja = await _context.Cajas
             .Include(c => c.UsuarioApertura)
+            .Include(c => c.UsuarioCierre)
             .FirstOrDefaultAsync(c =>
                 c.IdCaja == idCaja &&
                 c.Estado == "ABIERTA"
@@ -101,17 +191,27 @@ public class CajaRepository : ICajaRepository
             dto.MontoFinal - montoEsperado;
 
         caja.FechaCierre = fechaCierre;
+
         caja.MontoEsperado = montoEsperado;
+
         caja.MontoFinal = dto.MontoFinal;
+
         caja.Diferencia = diferencia;
+
         caja.IdUsuarioCierre = idUsuario;
+
         caja.Observacion = dto.Observacion;
+
         caja.Estado = "CERRADA";
 
         await _context.SaveChangesAsync();
 
         return caja;
     }
+
+    // =====================================================
+    // HISTORIAL DE CAJAS
+    // =====================================================
 
     public async Task<List<CajaDto>> ObtenerHistorialAsync()
     {
@@ -127,12 +227,15 @@ public class CajaRepository : ICajaRepository
             .ToList();
     }
 
+    // =====================================================
+    // CALCULAR EFECTIVO ESPERADO
+    // =====================================================
+
     private async Task<decimal> CalcularMontoEsperadoAsync(
         Caja caja,
         DateTime fechaHasta
     )
     {
-        // Ventas cobradas en EFECTIVO durante esta caja
         var totalVentasEfectivo =
             await _context.Ventas
                 .Where(v =>
@@ -144,7 +247,6 @@ public class CajaRepository : ICajaRepository
                     (decimal?)v.TotalVenta
                 ) ?? 0m;
 
-        // Ingresos y egresos manuales de esta caja
         var movimientosCaja =
             await _context.MovimientosCaja
                 .Where(m =>
@@ -175,11 +277,16 @@ public class CajaRepository : ICajaRepository
             - totalEgresos;
     }
 
+    // =====================================================
+    // CONVERTIR CAJA A DTO
+    // =====================================================
+
     private static CajaDto ConvertirADto(Caja caja)
     {
         return new CajaDto
         {
-            IdCaja = caja.IdCaja,
+            IdCaja =
+                caja.IdCaja,
 
             IdUsuarioApertura =
                 caja.IdUsuarioApertura,

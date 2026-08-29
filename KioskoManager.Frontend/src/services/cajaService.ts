@@ -25,19 +25,37 @@ export interface CerrarCajaDto {
     observacion?: string;
 }
 
+export interface CrearMovimientoCajaDto {
+    tipoMovimiento: "INGRESO" | "EGRESO";
+    monto: number;
+    descripcion?: string;
+}
+
+// =====================================================
+// OBTENER CAJA ACTUAL
+// =====================================================
+
 export async function obtenerCajaActual() {
 
     const response =
         await fetch(`${API}/Cajas/actual`);
 
     if (!response.ok) {
-        throw new Error(
-            await response.text()
-        );
+
+        const error =
+            await response.text();
+
+        console.error(error);
+
+        throw new Error(error);
     }
 
     return await response.json();
 }
+
+// =====================================================
+// ABRIR CAJA
+// =====================================================
 
 export async function abrirCaja(
     dto: AbrirCajaDto
@@ -67,6 +85,49 @@ export async function abrirCaja(
 
     return await response.json();
 }
+
+// =====================================================
+// REGISTRAR INGRESO / EGRESO
+// =====================================================
+
+export async function registrarMovimientoCaja(
+    dto: CrearMovimientoCajaDto
+) {
+    const response =
+        await fetch(`${API}/Cajas/movimiento`, {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(dto)
+        });
+
+    if (!response.ok) {
+
+        const texto =
+            await response.text();
+
+        console.error(
+            "ERROR HTTP:",
+            response.status
+        );
+
+        console.error(
+            "RESPUESTA DEL BACKEND:",
+            texto
+        );
+
+        throw new Error(texto);
+    }
+
+    return await response.json();
+}
+
+// =====================================================
+// CERRAR CAJA
+// =====================================================
 
 export async function cerrarCaja(
     idCaja: number,
@@ -100,6 +161,10 @@ export async function cerrarCaja(
     return await response.json();
 }
 
+// =====================================================
+// HISTORIAL DE CAJAS
+// =====================================================
+
 export async function obtenerHistorialCajas() {
 
     const response =
@@ -107,9 +172,12 @@ export async function obtenerHistorialCajas() {
 
     if (!response.ok) {
 
-        throw new Error(
-            await response.text()
-        );
+        const error =
+            await response.text();
+
+        console.error(error);
+
+        throw new Error(error);
     }
 
     return await response.json();

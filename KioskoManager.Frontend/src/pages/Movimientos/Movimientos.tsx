@@ -3,211 +3,526 @@ import {
     useEffect,
     useState
 } from "react";
+
 import "./Movimientos.css";
 
 import {
     obtenerMovimientos,
     type Movimiento
 } from "../../services/movimientoService";
-import GestionCaja from "../GestionCaja/GestionCaja";
 
-function obtenerNumeroVenta(descripcion: string) {
-    const match = descripcion.match(/Venta #(\d+)/);
-    return match ? match[1] : null;
+import GestionCaja
+    from "../GestionCaja/GestionCaja";
+
+function obtenerNumeroVenta(
+    descripcion: string
+) {
+    const match =
+        descripcion.match(/Venta #(\d+)/);
+
+    return match
+        ? match[1]
+        : null;
 }
 
-function esCabeceraVenta(m: Movimiento) {
+function esCabeceraVenta(
+    movimiento: Movimiento
+) {
     return (
-        m.tipo === "VENTA" &&
-        /^Venta #\d+$/.test(m.descripcion)
+        movimiento.tipo === "VENTA" &&
+        /^Venta #\d+$/.test(
+            movimiento.descripcion
+        )
     );
 }
 
 function Movimientos() {
 
-    const [movimientos, setMovimientos] =
-        useState<Movimiento[]>([]);
+    const [
+        movimientos,
+        setMovimientos
+    ] = useState<Movimiento[]>([]);
 
-    const [ventaExpandida, setVentaExpandida] =
-        useState<string | null>(null);
+    const [
+        ventaExpandida,
+        setVentaExpandida
+    ] = useState<string | null>(null);
 
-    const [gestionCajaAbierta, setGestionCajaAbierta] =
-        useState(false);
+    const [
+        gestionCajaAbierta,
+        setGestionCajaAbierta
+    ] = useState(false);
 
-    const [movimientoExpandido, setMovimientoExpandido] =
-        useState<number | null>(null);
+    const [
+        movimientoExpandido,
+        setMovimientoExpandido
+    ] = useState<number | null>(null);
 
     useEffect(() => {
+
         cargarMovimientos();
+
     }, []);
 
     async function cargarMovimientos() {
+
         try {
-            const data = await obtenerMovimientos();
+
+            const data =
+                await obtenerMovimientos();
+
             setMovimientos(data);
-        } catch (error) {
-            console.error(error);
+
+        }
+        catch (error) {
+
+            console.error(
+                "Error al cargar movimientos:",
+                error
+            );
+
         }
     }
 
+    /*
+     * Evita que una misma venta se renderice
+     * más de una vez si por algún motivo el
+     * backend devuelve registros duplicados.
+     */
+    const ventasMostradas =
+        new Set<number>();
+
     return (
+
         <div className="movimientos-page">
 
-            <h2>Historial</h2>
+            {/* =========================================
+                HEADER
+            ========================================= */}
 
-            <div className="acciones-caja">
+            <div className="movimientos-header">
+
+                <h2>
+                    Historial
+                </h2>
+
                 <button
                     type="button"
                     className="btn-ver-caja"
-                    onClick={() => setGestionCajaAbierta(true)}
+                    onClick={() =>
+                        setGestionCajaAbierta(true)
+                    }
                 >
                     💰 Ver caja
                 </button>
+
             </div>
+
+
+            {/* =========================================
+                MODAL DE CAJA
+            ========================================= */}
 
             <GestionCaja
                 abierto={gestionCajaAbierta}
-                onCerrar={() => setGestionCajaAbierta(false)}
+                onCerrar={() =>
+                    setGestionCajaAbierta(false)
+                }
             />
 
+
+            {/* =========================================
+                TABLA DE MOVIMIENTOS
+            ========================================= */}
+
             <div className="tabla-container">
+
                 <table className="tabla-movimientos">
+
                     <thead>
+
                         <tr>
-                            <th>Fecha</th>
-                            <th>Tipo</th>
-                            <th>Usuario</th>
-                            <th>Descripción</th>
-                            <th>Monto</th>
+
+                            <th>
+                                Fecha
+                            </th>
+
+                            <th>
+                                Tipo
+                            </th>
+
+                            <th>
+                                Usuario
+                            </th>
+
+                            <th>
+                                Descripción
+                            </th>
+
+                            <th>
+                                Monto
+                            </th>
+
                         </tr>
+
                     </thead>
 
                     <tbody>
-                        {movimientos.map((m, index) => {
 
-                            // CABECERA DE VENTA
-                            if (esCabeceraVenta(m)) {
+                        {movimientos.map(
+                            (movimiento, index) => {
 
-                                const numeroVenta = obtenerNumeroVenta(m.descripcion)!;
-                                const abierta = ventaExpandida === numeroVenta;
+                                // =====================================
+                                // CABECERA DE VENTA
+                                // =====================================
 
-                                const detalles = movimientos.filter(x =>
-                                    x.tipo === "VENTA" &&
-                                    !esCabeceraVenta(x) &&
-                                    obtenerNumeroVenta(x.descripcion) === numeroVenta
-                                );
+                                if (
+                                    esCabeceraVenta(
+                                        movimiento
+                                    )
+                                ) {
 
-                                return (
-                                    <Fragment key={`venta-${numeroVenta}`}>
-                                        <tr className="fila-venta">
-                                            <td>
-                                                {new Date(m.fecha).toLocaleString()}
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className="btn-expandir"
-                                                    onClick={() =>
-                                                        setVentaExpandida(
-                                                            abierta ? null : numeroVenta
-                                                        )
+                                    const numeroVenta =
+                                        obtenerNumeroVenta(
+                                            movimiento.descripcion
+                                        );
+
+                                    if (!numeroVenta) {
+                                        return null;
+                                    }
+
+                                    const idVenta =
+                                        Number(
+                                            numeroVenta
+                                        );
+
+                                    /*
+                                     * Si ya mostramos esta venta,
+                                     * no la volvemos a renderizar.
+                                     */
+                                    if (
+                                        ventasMostradas.has(
+                                            idVenta
+                                        )
+                                    ) {
+                                        return null;
+                                    }
+
+                                    ventasMostradas.add(
+                                        idVenta
+                                    );
+
+                                    const abierta =
+                                        ventaExpandida ===
+                                        numeroVenta;
+
+                                    /*
+                                     * Buscamos únicamente los
+                                     * detalles pertenecientes
+                                     * a esta venta.
+                                     */
+                                    const detalles =
+                                        movimientos.filter(
+                                            (detalle) =>
+                                                detalle.tipo === "VENTA" &&
+                                                !esCabeceraVenta(
+                                                    detalle
+                                                ) &&
+                                                obtenerNumeroVenta(
+                                                    detalle.descripcion
+                                                ) === numeroVenta
+                                        );
+
+                                    return (
+
+                                        <Fragment
+                                            key={
+                                                `venta-${idVenta}-${index}`
+                                            }
+                                        >
+
+                                            <tr
+                                                className="fila-venta"
+                                            >
+
+                                                <td>
+
+                                                    {new Date(
+                                                        movimiento.fecha
+                                                    ).toLocaleString()}
+
+                                                </td>
+
+                                                <td>
+
+                                                    <button
+                                                        type="button"
+                                                        className="btn-expandir"
+                                                        onClick={() =>
+                                                            setVentaExpandida(
+                                                                abierta
+                                                                    ? null
+                                                                    : numeroVenta
+                                                            )
+                                                        }
+                                                    >
+
+                                                        {abierta
+                                                            ? "▼"
+                                                            : "▶"}{" "}
+                                                        Venta
+
+                                                    </button>
+
+                                                </td>
+
+                                                <td>
+
+                                                    {
+                                                        movimiento.usuario
+                                                    }
+
+                                                </td>
+
+                                                <td>
+
+                                                    {
+                                                        movimiento.descripcion
+                                                    }
+
+                                                </td>
+
+                                                <td>
+
+                                                    {
+                                                        movimiento.monto != null
+                                                            ? `$${movimiento.monto.toFixed(2)}`
+                                                            : "-"
+                                                    }
+
+                                                </td>
+
+                                            </tr>
+
+
+                                            {/* =================================
+                                                DETALLES DE LA VENTA
+                                            ================================= */}
+
+                                            {abierta &&
+                                                detalles.map(
+                                                    (
+                                                        detalle,
+                                                        detalleIndex
+                                                    ) => (
+
+                                                        <tr
+                                                            key={
+                                                                `detalle-${idVenta}-${detalleIndex}`
+                                                            }
+                                                            className="detalle-venta"
+                                                        >
+
+                                                            <td />
+
+                                                            <td
+                                                                style={{
+                                                                    paddingLeft:
+                                                                        "30px"
+                                                                }}
+                                                            >
+                                                                • Producto
+                                                            </td>
+
+                                                            <td />
+
+                                                            <td>
+
+                                                                {
+                                                                    detalle.descripcion
+                                                                }
+
+                                                            </td>
+
+                                                            <td>
+
+                                                                {
+                                                                    detalle.monto != null
+                                                                        ? `$${detalle.monto.toFixed(2)}`
+                                                                        : "-"
+                                                                }
+
+                                                            </td>
+
+                                                        </tr>
+
+                                                    )
+                                                )
+                                            }
+
+                                        </Fragment>
+
+                                    );
+                                }
+
+
+                                // =====================================
+                                // INGRESOS / EGRESOS / OTROS MOVIMIENTOS
+                                // =====================================
+
+                                if (
+                                    movimiento.tipo !== "VENTA"
+                                ) {
+
+                                    const abierto =
+                                        movimientoExpandido ===
+                                        movimiento.idReferencia;
+
+                                    return (
+
+                                        <Fragment
+                                            key={
+                                                `mov-${movimiento.idReferencia}-${index}`
+                                            }
+                                        >
+
+                                            <tr>
+
+                                                <td>
+
+                                                    {new Date(
+                                                        movimiento.fecha
+                                                    ).toLocaleString()}
+
+                                                </td>
+
+                                                <td>
+
+                                                    <button
+                                                        type="button"
+                                                        className="btn-expandir"
+                                                        onClick={() =>
+                                                            setMovimientoExpandido(
+                                                                abierto
+                                                                    ? null
+                                                                    : movimiento.idReferencia
+                                                            )
+                                                        }
+                                                    >
+
+                                                        {abierto
+                                                            ? "▼"
+                                                            : "▶"}{" "}
+                                                        {
+                                                            movimiento.tipo
+                                                        }
+
+                                                    </button>
+
+                                                </td>
+
+                                                <td>
+
+                                                    {
+                                                        movimiento.usuario
+                                                    }
+
+                                                </td>
+
+                                                <td>
+
+                                                    {
+                                                        movimiento.nombreProducto ??
+                                                        "-"
+                                                    }
+
+                                                </td>
+
+                                                <td
+                                                    className={
+                                                        movimiento.tipo ===
+                                                        "INGRESO"
+                                                            ? "positivo"
+                                                            : "negativo"
                                                     }
                                                 >
-                                                    {abierta ? "▼" : "▶"} Venta
-                                                </button>
-                                            </td>
-                                            <td>{m.usuario}</td>
-                                            <td>{m.descripcion}</td>
-                                            <td>
-                                                {m.monto != null
-                                                    ? `$${m.monto.toFixed(2)}`
-                                                    : "-"}
-                                            </td>
-                                        </tr>
 
-                                        {abierta &&
-                                            detalles.map((d, i) => (
+                                                    {
+                                                        movimiento.tipo ===
+                                                        "INGRESO"
+                                                            ? "+"
+                                                            : "-"
+                                                    }
+
+                                                    {
+                                                        movimiento.cantidad
+                                                    }
+
+                                                </td>
+
+                                            </tr>
+
+
+                                            {/* =================================
+                                                OBSERVACIÓN
+                                            ================================= */}
+
+                                            {abierto && (
+
                                                 <tr
-                                                    key={`detalle-${numeroVenta}-${i}`}
                                                     className="detalle-venta"
                                                 >
-                                                    <td></td>
-                                                    <td style={{ paddingLeft: "30px" }}>
-                                                        • Producto
+
+                                                    <td />
+
+                                                    <td
+                                                        style={{
+                                                            paddingLeft:
+                                                                "30px"
+                                                        }}
+                                                    >
+                                                        Observación
                                                     </td>
-                                                    <td></td>
-                                                    <td>{d.descripcion}</td>
-                                                    <td>
-                                                        {d.monto != null
-                                                            ? `$${d.monto.toFixed(2)}`
-                                                            : "-"}
+
+                                                    <td />
+
+                                                    <td colSpan={2}>
+
+                                                        {
+                                                            movimiento.descripcion ||
+                                                            "Sin observación"
+                                                        }
+
                                                     </td>
+
                                                 </tr>
-                                            ))
-                                        }
-                                    </Fragment>
-                                );
+
+                                            )}
+
+                                        </Fragment>
+
+                                    );
+                                }
+
+
+                                // =====================================
+                                // DETALLES DE VENTA
+                                // NO SE RENDERIZAN DIRECTAMENTE
+                                // =====================================
+
+                                return null;
+
                             }
+                        )}
 
-                            // INGRESOS / EGRESOS
-                            if (m.tipo !== "VENTA") {
-
-                                const abierto = movimientoExpandido === m.idReferencia;
-
-                                return (
-                                    <Fragment key={`mov-${m.idReferencia}`}>
-                                        <tr>
-                                            <td>
-                                                {new Date(m.fecha).toLocaleString()}
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className="btn-expandir"
-                                                    onClick={() =>
-                                                        setMovimientoExpandido(
-                                                            abierto ? null : m.idReferencia
-                                                        )
-                                                    }
-                                                >
-                                                    {abierto ? "▼" : "▶"} {m.tipo}
-                                                </button>
-                                            </td>
-                                            <td>{m.usuario}</td>
-                                            <td>{m.nombreProducto ?? "-"}</td>
-                                            <td
-                                                className={
-                                                    m.tipo === "INGRESO"
-                                                        ? "positivo"
-                                                        : "negativo"
-                                                }
-                                            >
-                                                {m.tipo === "INGRESO" ? "+" : "-"}
-                                                {m.cantidad}
-                                            </td>
-                                        </tr>
-
-                                        {abierto && (
-                                            <tr className="detalle-venta">
-                                                <td></td>
-                                                <td style={{ paddingLeft: "30px" }}>
-                                                    Observación
-                                                </td>
-                                                <td></td>
-                                                <td colSpan={2}>
-                                                    {m.descripcion}
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </Fragment>
-                                );
-                            }
-
-                            // LOS DETALLES DE VENTA NO SE PINTAN AQUÍ
-                            return null;
-                        })}
                     </tbody>
+
                 </table>
+
             </div>
+
         </div>
+
     );
 }
 

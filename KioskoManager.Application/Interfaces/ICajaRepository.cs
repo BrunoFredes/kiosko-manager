@@ -19,4 +19,9 @@ public interface ICajaRepository
     );
 
     Task<List<CajaDto>> ObtenerHistorialAsync();
+
+    Task<MovimientoCajaDto?> RegistrarMovimientoAsync(
+        CrearMovimientoCajaDto dto,
+        long idUsuario
+    );
 }
