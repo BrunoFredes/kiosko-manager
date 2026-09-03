@@ -362,3 +362,103 @@
         width: 100%;
     }
 }
+.btn-historial-cajas {
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 9px 14px;
+
+    border-radius: 8px;
+
+    border: 1px solid #444;
+
+    background: transparent;
+
+    color: #ccc;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.btn-historial-cajas:hover {
+    background: #292929;
+
+    color: white;
+}
+
+.ultima-caja {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+.ultima-caja > div {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    background: #292929;
+}
+
+.ultima-caja span {
+    color: #999;
+
+    font-size: 12px;
+}
+
+.ultima-caja strong {
+    font-size: 17px;
+}
+
+.cierre-diferencia {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 13px 15px;
+
+    margin-bottom: 13px;
+
+    border-radius: 9px;
+
+    background: #292929;
+}
+
+.cierre-diferencia span {
+    color: #aaa;
+
+    font-size: 13px;
+}
+
+.cierre-diferencia strong {
+    font-size: 19px;
+}
+
+.cierre-diferencia.positiva strong,
+.diferencia-positiva {
+    color: #53c67b;
+}
+
+.cierre-diferencia.negativa strong,
+.diferencia-negativa {
+    color: #e47777;
+}
+
+.cierre-diferencia.cero strong,
+.diferencia-cero {
+    color: #aaa;
+}

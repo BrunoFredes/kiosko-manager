@@ -25,7 +25,9 @@ public class CajaRepository : ICajaRepository
             .AsNoTracking()
             .Include(c => c.UsuarioApertura)
             .Include(c => c.UsuarioCierre)
-            .FirstOrDefaultAsync(c => c.Estado == "ABIERTA");
+            .FirstOrDefaultAsync(
+                c => c.Estado == "ABIERTA"
+            );
 
         if (caja == null)
             return null;
@@ -49,7 +51,7 @@ public class CajaRepository : ICajaRepository
     // ABRIR CAJA
     // =====================================================
 
-    public async Task<Caja?> AbrirCajaAsync(
+    public async Task<CajaDto?> AbrirCajaAsync(
         AbrirCajaDto dto,
         long idUsuario
     )
@@ -67,16 +69,22 @@ public class CajaRepository : ICajaRepository
         var caja = new Caja
         {
             IdUsuarioApertura = idUsuario,
-            FechaApertura = DateTime.UtcNow,
-            MontoInicial = dto.MontoInicial,
-            Estado = "ABIERTA"
+
+            FechaApertura =
+                DateTime.UtcNow,
+
+            MontoInicial =
+                dto.MontoInicial,
+
+            Estado =
+                "ABIERTA"
         };
 
         _context.Cajas.Add(caja);
 
         await _context.SaveChangesAsync();
 
-        return caja;
+        return ConvertirADto(caja);
     }
 
     // =====================================================
@@ -115,21 +123,29 @@ public class CajaRepository : ICajaRepository
 
         var movimiento = new MovimientoCaja
         {
-            IdCaja = caja.IdCaja,
+            IdCaja =
+                caja.IdCaja,
 
-            TipoMovimiento = tipo,
+            TipoMovimiento =
+                tipo,
 
-            Monto = dto.Monto,
+            Monto =
+                dto.Monto,
 
             Descripcion =
-                string.IsNullOrWhiteSpace(dto.Descripcion)
+                string.IsNullOrWhiteSpace(
+                    dto.Descripcion
+                )
                     ? null
                     : dto.Descripcion.Trim(),
 
-            FechaMovimiento = DateTime.UtcNow
+            FechaMovimiento =
+                DateTime.UtcNow
         };
 
-        _context.MovimientosCaja.Add(movimiento);
+        _context.MovimientosCaja.Add(
+            movimiento
+        );
 
         await _context.SaveChangesAsync();
 
@@ -159,7 +175,7 @@ public class CajaRepository : ICajaRepository
     // CERRAR CAJA
     // =====================================================
 
-    public async Task<Caja?> CerrarCajaAsync(
+    public async Task<CajaDto?> CerrarCajaAsync(
         long idCaja,
         CerrarCajaDto dto,
         long idUsuario
@@ -168,9 +184,10 @@ public class CajaRepository : ICajaRepository
         var caja = await _context.Cajas
             .Include(c => c.UsuarioApertura)
             .Include(c => c.UsuarioCierre)
-            .FirstOrDefaultAsync(c =>
-                c.IdCaja == idCaja &&
-                c.Estado == "ABIERTA"
+            .FirstOrDefaultAsync(
+                c =>
+                    c.IdCaja == idCaja &&
+                    c.Estado == "ABIERTA"
             );
 
         if (caja == null)
@@ -179,7 +196,8 @@ public class CajaRepository : ICajaRepository
         if (dto.MontoFinal < 0)
             return null;
 
-        var fechaCierre = DateTime.UtcNow;
+        var fechaCierre =
+            DateTime.UtcNow;
 
         var montoEsperado =
             await CalcularMontoEsperadoAsync(
@@ -188,25 +206,37 @@ public class CajaRepository : ICajaRepository
             );
 
         var diferencia =
-            dto.MontoFinal - montoEsperado;
+            dto.MontoFinal -
+            montoEsperado;
 
-        caja.FechaCierre = fechaCierre;
+        caja.FechaCierre =
+            fechaCierre;
 
-        caja.MontoEsperado = montoEsperado;
+        caja.MontoEsperado =
+            montoEsperado;
 
-        caja.MontoFinal = dto.MontoFinal;
+        caja.MontoFinal =
+            dto.MontoFinal;
 
-        caja.Diferencia = diferencia;
+        caja.Diferencia =
+            diferencia;
 
-        caja.IdUsuarioCierre = idUsuario;
+        caja.IdUsuarioCierre =
+            idUsuario;
 
-        caja.Observacion = dto.Observacion;
+        caja.Observacion =
+            string.IsNullOrWhiteSpace(
+                dto.Observacion
+            )
+                ? null
+                : dto.Observacion.Trim();
 
-        caja.Estado = "CERRADA";
+        caja.Estado =
+            "CERRADA";
 
         await _context.SaveChangesAsync();
 
-        return caja;
+        return ConvertirADto(caja);
     }
 
     // =====================================================
@@ -215,12 +245,15 @@ public class CajaRepository : ICajaRepository
 
     public async Task<List<CajaDto>> ObtenerHistorialAsync()
     {
-        var cajas = await _context.Cajas
-            .AsNoTracking()
-            .Include(c => c.UsuarioApertura)
-            .Include(c => c.UsuarioCierre)
-            .OrderByDescending(c => c.FechaApertura)
-            .ToListAsync();
+        var cajas =
+            await _context.Cajas
+                .AsNoTracking()
+                .Include(c => c.UsuarioApertura)
+                .Include(c => c.UsuarioCierre)
+                .OrderByDescending(
+                    c => c.FechaApertura
+                )
+                .ToListAsync();
 
         return cajas
             .Select(ConvertirADto)
@@ -231,44 +264,66 @@ public class CajaRepository : ICajaRepository
     // CALCULAR EFECTIVO ESPERADO
     // =====================================================
 
-    private async Task<decimal> CalcularMontoEsperadoAsync(
-        Caja caja,
-        DateTime fechaHasta
-    )
+    private async Task<decimal>
+        CalcularMontoEsperadoAsync(
+            Caja caja,
+            DateTime fechaHasta
+        )
     {
         var totalVentasEfectivo =
             await _context.Ventas
-                .Where(v =>
-                    v.FechaVenta >= caja.FechaApertura &&
-                    v.FechaVenta <= fechaHasta &&
-                    v.MetodoPago == "EFECTIVO"
+                .Where(
+                    v =>
+                        v.FechaVenta >=
+                            caja.FechaApertura &&
+
+                        v.FechaVenta <=
+                            fechaHasta &&
+
+                        v.MetodoPago ==
+                            "EFECTIVO"
                 )
-                .SumAsync(v =>
-                    (decimal?)v.TotalVenta
+                .SumAsync(
+                    v =>
+                        (decimal?)v.TotalVenta
                 ) ?? 0m;
 
         var movimientosCaja =
             await _context.MovimientosCaja
-                .Where(m =>
-                    m.IdCaja == caja.IdCaja &&
-                    m.FechaMovimiento >= caja.FechaApertura &&
-                    m.FechaMovimiento <= fechaHasta
+                .Where(
+                    m =>
+                        m.IdCaja ==
+                            caja.IdCaja &&
+
+                        m.FechaMovimiento >=
+                            caja.FechaApertura &&
+
+                        m.FechaMovimiento <=
+                            fechaHasta
                 )
                 .ToListAsync();
 
         var totalIngresos =
             movimientosCaja
-                .Where(m =>
-                    m.TipoMovimiento == "INGRESO"
+                .Where(
+                    m =>
+                        m.TipoMovimiento ==
+                            "INGRESO"
                 )
-                .Sum(m => m.Monto);
+                .Sum(
+                    m => m.Monto
+                );
 
         var totalEgresos =
             movimientosCaja
-                .Where(m =>
-                    m.TipoMovimiento == "EGRESO"
+                .Where(
+                    m =>
+                        m.TipoMovimiento ==
+                            "EGRESO"
                 )
-                .Sum(m => m.Monto);
+                .Sum(
+                    m => m.Monto
+                );
 
         return
             caja.MontoInicial
@@ -281,7 +336,9 @@ public class CajaRepository : ICajaRepository
     // CONVERTIR CAJA A DTO
     // =====================================================
 
-    private static CajaDto ConvertirADto(Caja caja)
+    private static CajaDto ConvertirADto(
+        Caja caja
+    )
     {
         return new CajaDto
         {
@@ -293,9 +350,11 @@ public class CajaRepository : ICajaRepository
 
             UsuarioApertura =
                 caja.UsuarioApertura != null
-                    ? caja.UsuarioApertura.NombreUsuario +
-                      " " +
-                      caja.UsuarioApertura.ApellidoUsuario
+                    ? caja.UsuarioApertura
+                        .NombreUsuario
+                        + " "
+                        + caja.UsuarioApertura
+                            .ApellidoUsuario
                     : string.Empty,
 
             FechaApertura =
@@ -324,9 +383,11 @@ public class CajaRepository : ICajaRepository
 
             UsuarioCierre =
                 caja.UsuarioCierre != null
-                    ? caja.UsuarioCierre.NombreUsuario +
-                      " " +
-                      caja.UsuarioCierre.ApellidoUsuario
+                    ? caja.UsuarioCierre
+                        .NombreUsuario
+                        + " "
+                        + caja.UsuarioCierre
+                            .ApellidoUsuario
                     : null,
 
             Observacion =

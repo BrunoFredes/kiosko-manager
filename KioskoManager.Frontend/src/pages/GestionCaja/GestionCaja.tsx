@@ -10,10 +10,14 @@ import {
     abrirCaja,
     registrarMovimientoCaja,
     cerrarCaja,
+    obtenerHistorialCajas,
     type Caja
 } from "../../services/cajaService";
 
-type ModalVista =
+import HistorialCajas
+    from "./HistorialCajas";
+
+type Vista =
     | "CAJA"
     | "INGRESO"
     | "EGRESO"
@@ -32,11 +36,17 @@ function GestionCaja({
     const [caja, setCaja] =
         useState<Caja | null>(null);
 
+    const [ultimaCaja, setUltimaCaja] =
+        useState<Caja | null>(null);
+
     const [cargando, setCargando] =
         useState(false);
 
-    const [modalVista, setModalVista] =
-        useState<ModalVista>("CAJA");
+    const [vista, setVista] =
+        useState<Vista>("CAJA");
+
+    const [historialAbierto, setHistorialAbierto] =
+        useState(false);
 
     const [montoInicial, setMontoInicial] =
         useState("");
@@ -62,11 +72,36 @@ function GestionCaja({
             const data =
                 await obtenerCajaActual();
 
-            setCaja(
-                data.abierta
-                    ? data.caja
-                    : null
-            );
+            if (data.abierta) {
+
+                setCaja(data.caja);
+
+                setUltimaCaja(null);
+
+                return;
+            }
+
+            setCaja(null);
+
+            /*
+             * Si no hay una caja abierta,
+             * obtenemos la última caja cerrada
+             * para mostrar información útil.
+             */
+            const historial =
+                await obtenerHistorialCajas();
+
+            if (historial.length > 0) {
+
+                setUltimaCaja(
+                    historial[0]
+                );
+            }
+            else {
+
+                setUltimaCaja(null);
+
+            }
 
         }
         catch (error) {
@@ -86,18 +121,17 @@ function GestionCaja({
 
     useEffect(() => {
 
-        if (abierto) {
+        if (!abierto)
+            return;
 
-            cargarCaja();
+        setVista("CAJA");
 
-            setModalVista("CAJA");
-
-        }
+        cargarCaja();
 
     }, [abierto]);
 
     // =====================================================
-    // ABRIR CAJA
+    // ABRIR
     // =====================================================
 
     async function handleAbrirCaja() {
@@ -145,9 +179,6 @@ function GestionCaja({
 
     async function handleRegistrarMovimiento() {
 
-        if (!caja)
-            return;
-
         const monto =
             Number(montoMovimiento);
 
@@ -163,22 +194,20 @@ function GestionCaja({
             return;
         }
 
-        const tipo =
-            modalVista === "INGRESO"
-                ? "INGRESO"
-                : "EGRESO";
-
         try {
 
             await registrarMovimientoCaja({
 
-                tipoMovimiento: tipo,
+                tipoMovimiento:
+                    vista === "INGRESO"
+                        ? "INGRESO"
+                        : "EGRESO",
 
                 monto,
 
                 descripcion:
-                    descripcionMovimiento.trim()
-                        || undefined
+                    descripcionMovimiento
+                        .trim() || undefined
 
             });
 
@@ -186,28 +215,24 @@ function GestionCaja({
 
             setDescripcionMovimiento("");
 
-            setModalVista("CAJA");
+            setVista("CAJA");
 
             await cargarCaja();
 
         }
         catch (error) {
 
-            console.error(
-                "ERROR REGISTRANDO MOVIMIENTO:",
-                error
-            );
+            console.error(error);
 
             alert(
-                error instanceof Error
-                    ? error.message
-                    : "No se pudo registrar el movimiento."
+                "No se pudo registrar el movimiento."
             );
+
         }
     }
 
     // =====================================================
-    // CERRAR CAJA
+    // CERRAR
     // =====================================================
 
     async function handleCerrarCaja() {
@@ -238,8 +263,8 @@ function GestionCaja({
                     montoFinal: monto,
 
                     observacion:
-                        observacionCierre.trim()
-                            || undefined
+                        observacionCierre
+                            .trim() || undefined
                 }
             );
 
@@ -249,7 +274,7 @@ function GestionCaja({
 
             await cargarCaja();
 
-            setModalVista("CAJA");
+            setVista("CAJA");
 
         }
         catch (error) {
@@ -263,232 +288,397 @@ function GestionCaja({
         }
     }
 
+    const montoContado =
+        Number(montoFinal);
+
+    const diferenciaCierre =
+        caja &&
+        Number.isFinite(montoContado)
+            ? montoContado -
+              (caja.montoEsperado ?? 0)
+            : null;
+
+    function volverCaja() {
+
+        setMontoMovimiento("");
+
+        setDescripcionMovimiento("");
+
+        setMontoFinal("");
+
+        setObservacionCierre("");
+
+        setVista("CAJA");
+
+    }
+
     if (!abierto)
         return null;
 
     return (
 
-        <div
-            className="gestion-caja-overlay"
-            onClick={onCerrar}
-        >
+        <>
 
             <div
-                className="gestion-caja-modal"
-                onClick={(event) =>
-                    event.stopPropagation()
-                }
+                className="gestion-caja-overlay"
+                onClick={onCerrar}
             >
 
-                {/* =====================================================
-                    HEADER
-                ===================================================== */}
+                <div
+                    className="gestion-caja-modal"
+                    onClick={(event) =>
+                        event.stopPropagation()
+                    }
+                >
 
-                <div className="gestion-caja-header">
+                    {/* =================================
+                        HEADER
+                    ================================= */}
 
-                    <div>
+                    <div className="gestion-caja-header">
 
-                        <h2>
-                            Caja
-                        </h2>
+                        <div>
 
-                        <span
-                            className={
-                                caja
-                                    ? "estado-caja abierta"
-                                    : "estado-caja cerrada"
-                            }
+                            <h2>
+                                Caja
+                            </h2>
+
+                            <span
+                                className={
+                                    caja
+                                        ? "estado-caja abierta"
+                                        : "estado-caja cerrada"
+                                }
+                            >
+                                {caja
+                                    ? "● Caja abierta"
+                                    : "● Caja cerrada"}
+                            </span>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            className="btn-cerrar-modal"
+                            onClick={onCerrar}
                         >
-                            {caja
-                                ? "● Caja abierta"
-                                : "● Caja cerrada"}
-                        </span>
+                            ×
+                        </button>
 
                     </div>
 
-                    <button
-                        type="button"
-                        className="btn-cerrar-modal"
-                        onClick={onCerrar}
-                    >
-                        ×
-                    </button>
 
-                </div>
+                    {/* =================================
+                        LOADING
+                    ================================= */}
 
+                    {cargando ? (
 
-                {/* =====================================================
-                    LOADING
-                ===================================================== */}
+                        <div className="gestion-caja-loading">
+                            Cargando...
+                        </div>
 
-                {cargando ? (
+                    ) : vista === "CAJA" ? (
 
-                    <div className="gestion-caja-loading">
+                        /* =================================
+                           VISTA CAJA
+                        ================================= */
 
-                        Cargando caja...
+                        caja ? (
 
-                    </div>
+                            <>
 
-                ) : modalVista === "CAJA" ? (
+                                <div className="caja-datos-grid">
 
-                    /* =====================================================
-                       VISTA PRINCIPAL
-                    ===================================================== */
+                                    <div className="caja-dato">
 
-                    caja ? (
+                                        <span>
+                                            Usuario
+                                        </span>
 
-                        <>
+                                        <strong>
+                                            {
+                                                caja.usuarioApertura
+                                            }
+                                        </strong>
 
-                            <div className="caja-datos-grid">
+                                    </div>
 
-                                <div className="caja-dato">
+                                    <div className="caja-dato">
 
-                                    <span>
-                                        Usuario
-                                    </span>
+                                        <span>
+                                            Apertura
+                                        </span>
 
-                                    <strong>
-                                        {caja.usuarioApertura}
-                                    </strong>
+                                        <strong>
+                                            {new Date(
+                                                caja.fechaApertura
+                                            ).toLocaleString()}
+                                        </strong>
 
-                                </div>
-
-                                <div className="caja-dato">
-
-                                    <span>
-                                        Apertura
-                                    </span>
-
-                                    <strong>
-                                        {new Date(
-                                            caja.fechaApertura
-                                        ).toLocaleString()}
-                                    </strong>
+                                    </div>
 
                                 </div>
 
-                            </div>
 
+                                <div className="caja-resumen">
 
-                            <div className="caja-resumen">
+                                    <div className="caja-resumen-item">
 
-                                <div className="caja-resumen-item">
+                                        <span>
+                                            Monto inicial
+                                        </span>
 
-                                    <span>
-                                        Monto inicial
-                                    </span>
+                                        <strong>
+                                            $
+                                            {caja.montoInicial.toFixed(2)}
+                                        </strong>
 
-                                    <strong>
-                                        $
-                                        {caja.montoInicial.toFixed(2)}
-                                    </strong>
+                                    </div>
+
+                                    <div className="caja-resumen-item destacado">
+
+                                        <span>
+                                            Efectivo esperado
+                                        </span>
+
+                                        <strong>
+                                            $
+                                            {(
+                                                caja.montoEsperado
+                                                ?? 0
+                                            ).toFixed(2)}
+                                        </strong>
+
+                                    </div>
 
                                 </div>
 
-                                <div className="caja-resumen-item destacado">
 
-                                    <span>
-                                        Efectivo esperado
-                                    </span>
+                                <div className="caja-botones">
 
-                                    <strong>
-                                        $
-                                        {(
-                                            caja.montoEsperado
-                                            ?? 0
-                                        ).toFixed(2)}
-                                    </strong>
+                                    <button
+                                        type="button"
+                                        className="btn-ingreso"
+                                        onClick={() =>
+                                            setVista(
+                                                "INGRESO"
+                                            )
+                                        }
+                                    >
+                                        + Ingreso
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="btn-egreso"
+                                        onClick={() =>
+                                            setVista(
+                                                "EGRESO"
+                                            )
+                                        }
+                                    >
+                                        − Egreso
+                                    </button>
 
                                 </div>
 
-                            </div>
 
+                                <div className="caja-botones-secundarios">
 
-                            <div className="caja-botones">
+                                    <button
+                                        type="button"
+                                        className="btn-actualizar"
+                                        onClick={
+                                            cargarCaja
+                                        }
+                                    >
+                                        Actualizar
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="btn-cerrar-caja"
+                                        onClick={() =>
+                                            setVista(
+                                                "CIERRE"
+                                            )
+                                        }
+                                    >
+                                        Cerrar caja
+                                    </button>
+
+                                </div>
+
 
                                 <button
                                     type="button"
-                                    className="btn-ingreso"
+                                    className="btn-historial-cajas"
                                     onClick={() =>
-                                        setModalVista(
-                                            "INGRESO"
+                                        setHistorialAbierto(
+                                            true
                                         )
                                     }
                                 >
-                                    + Ingreso
+                                    Ver historial de cajas
                                 </button>
 
-                                <button
-                                    type="button"
-                                    className="btn-egreso"
-                                    onClick={() =>
-                                        setModalVista(
-                                            "EGRESO"
+                            </>
+
+                        ) : (
+
+                            /* =================================
+                               CAJA CERRADA
+                            ================================= */
+
+                            <div className="caja-sin-abrir">
+
+                                <h3>
+                                    No hay una caja abierta
+                                </h3>
+
+                                {ultimaCaja ? (
+
+                                    <div className="ultima-caja">
+
+                                        <div>
+
+                                            <span>
+                                                Última caja
+                                            </span>
+
+                                            <strong>
+                                                Caja #
+                                                {
+                                                    ultimaCaja.idCaja
+                                                }
+                                            </strong>
+
+                                        </div>
+
+                                        {ultimaCaja.diferencia != null && (
+
+                                            <div>
+
+                                                <span>
+                                                    Diferencia
+                                                </span>
+
+                                                <strong
+                                                    className={
+                                                        ultimaCaja.diferencia > 0
+                                                            ? "diferencia-positiva"
+                                                            : ultimaCaja.diferencia < 0
+                                                                ? "diferencia-negativa"
+                                                                : "diferencia-cero"
+                                                    }
+                                                >
+
+                                                    {ultimaCaja.diferencia > 0
+                                                        ? "+"
+                                                        : ""}
+
+                                                    $
+                                                    {ultimaCaja.diferencia.toFixed(2)}
+
+                                                </strong>
+
+                                            </div>
+
+                                        )}
+
+                                    </div>
+
+                                ) : (
+
+                                    <p>
+                                        Todavía no hay cajas
+                                        registradas.
+                                    </p>
+
+                                )}
+
+                                <label>
+                                    Monto inicial
+                                </label>
+
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={
+                                        montoInicial
+                                    }
+                                    onChange={(event) =>
+                                        setMontoInicial(
+                                            event.target.value
                                         )
                                     }
-                                >
-                                    − Egreso
-                                </button>
-
-                            </div>
-
-
-                            <div className="caja-botones-secundarios">
+                                    placeholder="0.00"
+                                    autoFocus
+                                />
 
                                 <button
                                     type="button"
-                                    className="btn-actualizar"
+                                    className="btn-abrir-caja"
                                     onClick={
-                                        cargarCaja
+                                        handleAbrirCaja
                                     }
                                 >
-                                    Actualizar
+                                    Abrir caja
                                 </button>
 
                                 <button
                                     type="button"
-                                    className="btn-cerrar-caja"
+                                    className="btn-historial-cajas"
                                     onClick={() =>
-                                        setModalVista(
-                                            "CIERRE"
+                                        setHistorialAbierto(
+                                            true
                                         )
                                     }
                                 >
-                                    Cerrar caja
+                                    Ver historial de cajas
                                 </button>
 
                             </div>
 
-                        </>
+                        )
 
-                    ) : (
+                    ) : vista === "INGRESO" || vista === "EGRESO" ? (
 
-                        /* =====================================================
-                           CAJA CERRADA
-                        ===================================================== */
+                        /* =================================
+                           INGRESO / EGRESO
+                        ================================= */
 
-                        <div className="caja-sin-abrir">
+                        <div className="caja-form">
 
                             <h3>
-                                No hay una caja abierta
+                                {vista === "INGRESO"
+                                    ? "Agregar ingreso"
+                                    : "Registrar egreso"}
                             </h3>
 
-                            <p>
-                                Ingresá el dinero con el
-                                que comienza la jornada.
+                            <p className="form-ayuda">
+
+                                {vista === "INGRESO"
+                                    ? "Dinero que entra físicamente a la caja."
+                                    : "Dinero que sale físicamente de la caja."}
+
                             </p>
 
                             <label>
-                                Monto inicial
+                                Monto
                             </label>
 
                             <input
                                 type="number"
                                 min="0"
                                 step="0.01"
-                                value={montoInicial}
+                                value={
+                                    montoMovimiento
+                                }
                                 onChange={(event) =>
-                                    setMontoInicial(
+                                    setMontoMovimiento(
                                         event.target.value
                                     )
                                 }
@@ -496,217 +686,198 @@ function GestionCaja({
                                 autoFocus
                             />
 
-                            <button
-                                type="button"
-                                className="btn-abrir-caja"
-                                onClick={
-                                    handleAbrirCaja
+                            <label>
+                                Concepto
+                            </label>
+
+                            <textarea
+                                value={
+                                    descripcionMovimiento
                                 }
-                            >
-                                Abrir caja
-                            </button>
+                                onChange={(event) =>
+                                    setDescripcionMovimiento(
+                                        event.target.value
+                                    )
+                                }
+                                placeholder={
+                                    vista === "INGRESO"
+                                        ? "Ej: Dinero aportado por el dueño"
+                                        : "Ej: Pago a proveedor"
+                                }
+                            />
+
+                            <div className="modal-acciones">
+
+                                <button
+                                    type="button"
+                                    className="btn-volver"
+                                    onClick={
+                                        volverCaja
+                                    }
+                                >
+                                    Cancelar
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={
+                                        vista === "INGRESO"
+                                            ? "btn-ingreso"
+                                            : "btn-egreso"
+                                    }
+                                    onClick={
+                                        handleRegistrarMovimiento
+                                    }
+                                >
+                                    {vista === "INGRESO"
+                                        ? "Registrar ingreso"
+                                        : "Registrar egreso"}
+                                </button>
+
+                            </div>
 
                         </div>
 
-                    )
+                    ) : (
 
-                ) : modalVista === "INGRESO" || modalVista === "EGRESO" ? (
+                        /* =================================
+                           CIERRE
+                        ================================= */
 
-                    /* =====================================================
-                       INGRESO / EGRESO
-                    ===================================================== */
+                        <div className="caja-form">
 
-                    <div className="caja-form">
+                            <h3>
+                                Cerrar caja
+                            </h3>
 
-                        <h3>
-                            {modalVista === "INGRESO"
-                                ? "Agregar ingreso"
-                                : "Registrar egreso"}
-                        </h3>
+                            <div className="cierre-esperado">
 
-                        <p className="form-ayuda">
+                                <span>
+                                    Efectivo esperado
+                                </span>
 
-                            {modalVista === "INGRESO"
-                                ? "Dinero que entra físicamente a la caja."
-                                : "Dinero que sale físicamente de la caja."}
+                                <strong>
+                                    $
+                                    {(
+                                        caja?.montoEsperado
+                                        ?? 0
+                                    ).toFixed(2)}
+                                </strong>
 
-                        </p>
+                            </div>
 
-                        <label>
-                            Monto
-                        </label>
+                            <label>
+                                Dinero contado
+                            </label>
 
-                        <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={montoMovimiento}
-                            onChange={(event) =>
-                                setMontoMovimiento(
-                                    event.target.value
-                                )
-                            }
-                            placeholder="0.00"
-                            autoFocus
-                        />
-
-                        <label>
-                            Concepto
-                        </label>
-
-                        <textarea
-                            value={
-                                descripcionMovimiento
-                            }
-                            onChange={(event) =>
-                                setDescripcionMovimiento(
-                                    event.target.value
-                                )
-                            }
-                            placeholder={
-                                modalVista === "INGRESO"
-                                    ? "Ej: Dinero aportado por el dueño"
-                                    : "Ej: Pago a proveedor"
-                            }
-                        />
-
-                        <div className="modal-acciones">
-
-                            <button
-                                type="button"
-                                className="btn-volver"
-                                onClick={() => {
-
-                                    setMontoMovimiento("");
-
-                                    setDescripcionMovimiento("");
-
-                                    setModalVista("CAJA");
-
-                                }}
-                            >
-                                Cancelar
-                            </button>
-
-                            <button
-                                type="button"
-                                className={
-                                    modalVista === "INGRESO"
-                                        ? "btn-ingreso"
-                                        : "btn-egreso"
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={
+                                    montoFinal
                                 }
-                                onClick={
-                                    handleRegistrarMovimiento
+                                onChange={(event) =>
+                                    setMontoFinal(
+                                        event.target.value
+                                    )
                                 }
-                            >
-                                {modalVista === "INGRESO"
-                                    ? "Registrar ingreso"
-                                    : "Registrar egreso"}
-                            </button>
+                                placeholder="0.00"
+                                autoFocus
+                            />
+
+                            {diferenciaCierre != null && (
+
+                                <div
+                                    className={
+                                        diferenciaCierre > 0
+                                            ? "cierre-diferencia positiva"
+                                            : diferenciaCierre < 0
+                                                ? "cierre-diferencia negativa"
+                                                : "cierre-diferencia cero"
+                                    }
+                                >
+
+                                    <span>
+                                        Diferencia
+                                    </span>
+
+                                    <strong>
+
+                                        {diferenciaCierre > 0
+                                            ? "+"
+                                            : ""}
+
+                                        $
+                                        {diferenciaCierre.toFixed(2)}
+
+                                    </strong>
+
+                                </div>
+
+                            )}
+
+                            <label>
+                                Observación
+                            </label>
+
+                            <textarea
+                                value={
+                                    observacionCierre
+                                }
+                                onChange={(event) =>
+                                    setObservacionCierre(
+                                        event.target.value
+                                    )
+                                }
+                                placeholder="Opcional"
+                            />
+
+                            <div className="modal-acciones">
+
+                                <button
+                                    type="button"
+                                    className="btn-volver"
+                                    onClick={
+                                        volverCaja
+                                    }
+                                >
+                                    Cancelar
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="btn-cerrar-caja"
+                                    onClick={
+                                        handleCerrarCaja
+                                    }
+                                >
+                                    Confirmar cierre
+                                </button>
+
+                            </div>
 
                         </div>
 
-                    </div>
+                    )}
 
-                ) : (
-
-                    /* =====================================================
-                       CIERRE
-                    ===================================================== */
-
-                    <div className="caja-form">
-
-                        <h3>
-                            Cerrar caja
-                        </h3>
-
-                        <div className="cierre-esperado">
-
-                            <span>
-                                Efectivo esperado
-                            </span>
-
-                            <strong>
-                                $
-                                {(
-                                    caja?.montoEsperado
-                                    ?? 0
-                                ).toFixed(2)}
-                            </strong>
-
-                        </div>
-
-                        <label>
-                            Dinero contado
-                        </label>
-
-                        <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={montoFinal}
-                            onChange={(event) =>
-                                setMontoFinal(
-                                    event.target.value
-                                )
-                            }
-                            placeholder="0.00"
-                            autoFocus
-                        />
-
-                        <label>
-                            Observación
-                        </label>
-
-                        <textarea
-                            value={
-                                observacionCierre
-                            }
-                            onChange={(event) =>
-                                setObservacionCierre(
-                                    event.target.value
-                                )
-                            }
-                            placeholder="Opcional"
-                        />
-
-                        <div className="modal-acciones">
-
-                            <button
-                                type="button"
-                                className="btn-volver"
-                                onClick={() => {
-
-                                    setMontoFinal("");
-
-                                    setObservacionCierre("");
-
-                                    setModalVista("CAJA");
-
-                                }}
-                            >
-                                Cancelar
-                            </button>
-
-                            <button
-                                type="button"
-                                className="btn-cerrar-caja"
-                                onClick={
-                                    handleCerrarCaja
-                                }
-                            >
-                                Confirmar cierre
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                )}
+                </div>
 
             </div>
 
-        </div>
+
+            <HistorialCajas
+                abierto={
+                    historialAbierto
+                }
+                onCerrar={() =>
+                    setHistorialAbierto(
+                        false
+                    )
+                }
+            />
+
+        </>
 
     );
 }

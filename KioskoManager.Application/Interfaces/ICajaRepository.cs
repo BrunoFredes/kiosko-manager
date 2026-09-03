@@ -1,5 +1,4 @@
 ﻿using KioskoManager.Application.DTOs;
-using KioskoManager.Domain.Entities;
 
 namespace KioskoManager.Application.Interfaces;
 
@@ -7,12 +6,12 @@ public interface ICajaRepository
 {
     Task<CajaDto?> ObtenerCajaActualAsync();
 
-    Task<Caja?> AbrirCajaAsync(
+    Task<CajaDto?> AbrirCajaAsync(
         AbrirCajaDto dto,
         long idUsuario
     );
 
-    Task<Caja?> CerrarCajaAsync(
+    Task<CajaDto?> CerrarCajaAsync(
         long idCaja,
         CerrarCajaDto dto,
         long idUsuario
