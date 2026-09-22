@@ -118,18 +118,12 @@ function Movimientos() {
 
             </div>
 
-
-            {/* =========================================
-                MODAL DE CAJA
-            ========================================= */}
-
             <GestionCaja
                 abierto={gestionCajaAbierta}
                 onCerrar={() =>
                     setGestionCajaAbierta(false)
                 }
             />
-
 
             {/* =========================================
                 TABLA DE MOVIMIENTOS

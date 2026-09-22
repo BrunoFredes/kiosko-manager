@@ -1,7 +1,63 @@
+:root {
+    --historial-bg: #ffffff;
+    --historial-card: #ffffff;
+    --historial-detail: #f8f9fa;
+
+    --historial-border: #e5e5e5;
+    --historial-divider: #e5e5e5;
+
+    --historial-text: #202124;
+    --historial-soft: #6c757d;
+    --historial-muted: #8a8f98;
+
+    --historial-hover: #f5f5f5;
+
+    --historial-icon-bg: #e9ecef;
+
+    --historial-positivo: #198754;
+    --historial-negativo: #dc3545;
+
+    --historial-badge-cerrada-bg: rgba(207, 77, 77, 0.12);
+    --historial-badge-cerrada-text: #c03939;
+
+    --historial-badge-abierta-bg: rgba(47, 158, 91, 0.12);
+    --historial-badge-abierta-text: #198754;
+}
+
+[data-theme="dark"] {
+    --historial-bg: #262b33;
+    --historial-card: #292f38;
+    --historial-detail: #252b33;
+
+    --historial-border: #404854;
+    --historial-divider: #3a414b;
+
+    --historial-text: #f3f4f6;
+    --historial-soft: #b7bcc5;
+    --historial-muted: #8f96a1;
+
+    --historial-hover: #313843;
+
+    --historial-icon-bg: #383f49;
+
+    --historial-positivo: #53c67b;
+    --historial-negativo: #e47777;
+
+    --historial-badge-cerrada-bg: rgba(207, 77, 77, 0.15);
+    --historial-badge-cerrada-text: #e47777;
+
+    --historial-badge-abierta-bg: rgba(47, 158, 91, 0.15);
+    --historial-badge-abierta-text: #53c67b;
+}
+
+
+/* =====================================================
+   MODAL
+   ===================================================== */
+
 .historial-cajas-overlay {
     position: fixed;
     inset: 0;
-
     z-index: 1100;
 
     display: flex;
@@ -14,28 +70,32 @@
 }
 
 .historial-cajas-modal {
-    width: min(760px, 100%);
+    width: min(820px, 100%);
     max-height: 90vh;
 
     overflow-y: auto;
-
     box-sizing: border-box;
 
     padding: 24px;
 
     border-radius: 16px;
 
-    background: #1f1f1f;
+    background: var(--historial-bg);
+    color: var(--historial-text);
 
-    border: 1px solid #383838;
+    border: 1px solid var(--historial-border);
 
     box-shadow:
         0 25px 80px rgba(0, 0, 0, 0.5);
 }
 
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
 .historial-cajas-header {
     display: flex;
-
     justify-content: space-between;
     align-items: flex-start;
 
@@ -49,7 +109,7 @@
 .historial-cajas-header p {
     margin: 0;
 
-    color: #999;
+    color: var(--historial-soft);
 
     font-size: 13px;
 }
@@ -58,11 +118,9 @@
     border: none;
 
     background: transparent;
-
-    color: white;
+    color: var(--historial-text);
 
     font-size: 30px;
-
     line-height: 1;
 
     cursor: pointer;
@@ -74,88 +132,157 @@
     opacity: 1;
 }
 
+
+/* =====================================================
+   LOADING / VACÍO
+   ===================================================== */
+
 .historial-cajas-loading,
 .historial-cajas-vacio {
     padding: 40px;
 
     text-align: center;
 
-    color: #999;
+    color: var(--historial-soft);
 }
 
-.historial-caja-item {
-    padding: 18px;
 
+/* =====================================================
+   CAJA
+   ===================================================== */
+
+.historial-caja-item {
     margin-bottom: 12px;
 
     border-radius: 12px;
 
-    background: #292929;
+    background: var(--historial-card);
+    border: 1px solid var(--historial-border);
 
-    border: 1px solid #383838;
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
 }
 
 .historial-caja-item:last-child {
     margin-bottom: 0;
 }
 
+.historial-caja-item.expandida {
+    border-color: var(--historial-muted);
+}
+
+
+/* =====================================================
+   CABECERA CLICKEABLE
+   ===================================================== */
+
+.historial-caja-clickable {
+    display: block;
+
+    width: 100%;
+
+    padding: 18px;
+
+    border: none;
+
+    background: transparent;
+    color: inherit;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.historial-caja-clickable:hover {
+    background: var(--historial-hover);
+}
+
+
+/* =====================================================
+   HEADER DE CADA CAJA
+   ===================================================== */
+
 .historial-caja-item-header {
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     margin-bottom: 14px;
 }
 
-.historial-caja-item-header strong {
+.historial-caja-titulo {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+}
+
+.historial-caja-titulo strong {
     font-size: 17px;
 }
 
-.historial-caja-item-header span {
+.historial-caja-flecha {
+    width: 14px;
+
+    color: var(--historial-soft);
+
+    font-size: 11px;
+}
+
+.historial-caja-item-header > span {
     padding: 5px 9px;
 
     border-radius: 999px;
 
     font-size: 11px;
-
     font-weight: 700;
 }
 
-.badge-cerrada {
-    background: rgba(207, 77, 77, 0.15);
 
-    color: #e47777;
+/* =====================================================
+   BADGES
+   ===================================================== */
+
+.badge-cerrada {
+    background: var(--historial-badge-cerrada-bg);
+    color: var(--historial-badge-cerrada-text);
 }
 
 .badge-abierta {
-    background: rgba(47, 158, 91, 0.15);
-
-    color: #53c67b;
+    background: var(--historial-badge-abierta-bg);
+    color: var(--historial-badge-abierta-text);
 }
+
+
+/* =====================================================
+   INFORMACIÓN GENERAL
+   ===================================================== */
 
 .historial-caja-info {
     display: grid;
 
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
 
-    gap: 10px;
+    gap: 12px;
 
     margin-bottom: 14px;
 }
 
 .historial-caja-info div {
     display: flex;
-
     flex-direction: column;
 
     gap: 5px;
 }
 
 .historial-caja-info span,
-.historial-caja-montos span {
-    color: #999;
+.historial-caja-montos span,
+.historial-detalle-resumen span,
+.historial-observacion span {
+    color: var(--historial-soft);
 
     font-size: 12px;
 }
@@ -164,22 +291,25 @@
     font-size: 13px;
 }
 
+
+/* =====================================================
+   MONTOS
+   ===================================================== */
+
 .historial-caja-montos {
     display: grid;
 
-    grid-template-columns:
-        repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr);
 
     gap: 10px;
 
     padding-top: 14px;
 
-    border-top: 1px solid #3a3a3a;
+    border-top: 1px solid var(--historial-divider);
 }
 
 .historial-caja-montos div {
     display: flex;
-
     flex-direction: column;
 
     gap: 5px;
@@ -189,35 +319,229 @@
     font-size: 15px;
 }
 
-.diferencia-positiva {
-    color: #53c67b;
+
+/* =====================================================
+   DIFERENCIA
+   ===================================================== */
+
+.diferencia-positiva,
+.detalle-positivo {
+    color: var(--historial-positivo);
 }
 
-.diferencia-negativa {
-    color: #e47777;
+.diferencia-negativa,
+.detalle-negativo {
+    color: var(--historial-negativo);
 }
 
 .diferencia-cero {
-    color: #aaa;
+    color: var(--historial-soft);
 }
 
-.historial-caja-footer {
+
+/* =====================================================
+   DETALLE
+   ===================================================== */
+
+.historial-caja-detalle {
+    padding: 0 18px 18px;
+
+    border-top: 1px solid var(--historial-divider);
+
+    background: var(--historial-detail);
+}
+
+.historial-detalle-loading,
+.historial-detalle-error {
+    padding: 25px 10px;
+
+    text-align: center;
+
+    color: var(--historial-soft);
+
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   RESUMEN DEL DETALLE
+   ===================================================== */
+
+.historial-detalle-resumen {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    padding: 16px 0;
+}
+
+.historial-detalle-resumen div {
     display: flex;
+    flex-direction: column;
 
-    justify-content: space-between;
+    gap: 5px;
 
-    gap: 15px;
+    padding: 12px;
 
-    padding-top: 14px;
+    border-radius: 10px;
 
-    margin-top: 14px;
+    background: var(--historial-card);
 
-    border-top: 1px solid #3a3a3a;
+    border: 1px solid var(--historial-border);
+}
 
-    color: #999;
+.historial-detalle-resumen strong {
+    font-size: 16px;
+}
+
+
+/* =====================================================
+   OBSERVACIÓN
+   ===================================================== */
+
+.historial-observacion {
+    margin-bottom: 18px;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    background: var(--historial-card);
+
+    border: 1px solid var(--historial-border);
+}
+
+.historial-observacion p {
+    margin: 6px 0 0;
+
+    color: var(--historial-text);
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   MOVIMIENTOS DE CAJA
+   ===================================================== */
+
+.historial-movimientos-titulo {
+    margin-bottom: 10px;
+
+    color: var(--historial-soft);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.04em;
+}
+
+.historial-movimientos-lista {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.historial-movimiento {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 11px 12px;
+
+    border-radius: 10px;
+
+    background: var(--historial-card);
+
+    border: 1px solid var(--historial-border);
+}
+
+.historial-movimiento-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: var(--historial-icon-bg);
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.historial-movimiento-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+
+    min-width: 0;
+    flex: 1;
+}
+
+.historial-movimiento-info strong {
+    font-size: 13px;
+}
+
+.historial-movimiento-info span {
+    overflow: hidden;
+
+    color: var(--historial-soft);
+
+    font-size: 12px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.historial-movimiento-info small {
+    color: var(--historial-muted);
+
+    font-size: 10px;
+}
+
+.historial-movimiento > strong {
+    flex-shrink: 0;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   SIN MOVIMIENTOS
+   ===================================================== */
+
+.historial-movimientos-vacio {
+    padding: 20px;
+
+    border-radius: 10px;
+
+    background: var(--historial-card);
+
+    border: 1px solid var(--historial-border);
+
+    color: var(--historial-soft);
+
+    text-align: center;
 
     font-size: 12px;
 }
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
 
 @media (max-width: 650px) {
 
@@ -226,7 +550,15 @@
         grid-template-columns: 1fr 1fr;
     }
 
-    .historial-caja-footer {
-        flex-direction: column;
+    .historial-detalle-resumen {
+        grid-template-columns: 1fr;
+    }
+
+    .historial-movimiento {
+        align-items: flex-start;
+    }
+
+    .historial-movimiento > strong {
+        margin-left: auto;
     }
 }

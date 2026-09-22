@@ -232,4 +232,38 @@ public class CajasController : ControllerBase
             );
         }
     }
+    [HttpGet("{idCaja:long}/detalle")]
+public async Task<IActionResult> ObtenerDetalle(
+    long idCaja
+)
+{
+    try
+    {
+        var detalle =
+            await _cajaRepository
+                .ObtenerDetalleAsync(idCaja);
+
+        if (detalle == null)
+        {
+            return NotFound(
+                "No se encontró la caja."
+            );
+        }
+
+        return Ok(detalle);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(
+            500,
+            new
+            {
+                mensaje =
+                    "Error al obtener el detalle de la caja",
+                detalle =
+                    ex.ToString()
+            }
+        );
+    }
+}
 }

@@ -29,6 +29,13 @@ export interface Caja {
     observacion: string | null;
 }
 
+export interface CajaDetalleDto {
+    caja: Caja;
+    totalIngresos: number;
+    totalEgresos: number;
+    movimientos: MovimientoCajaDto[];
+}
+
 export interface AbrirCajaDto {
 
     montoInicial: number;
@@ -210,6 +217,26 @@ export async function obtenerHistorialCajas() {
 
     if (!response.ok) {
 
+        const error =
+            await response.text();
+
+        throw new Error(error);
+    }
+
+    return await response.json();
+}
+
+
+
+export async function obtenerDetalleCaja(
+    idCaja: number
+): Promise<CajaDetalleDto> {
+
+    const response = await fetch(
+        `${API}/Cajas/${idCaja}/detalle`
+    );
+
+    if (!response.ok) {
         const error =
             await response.text();
 

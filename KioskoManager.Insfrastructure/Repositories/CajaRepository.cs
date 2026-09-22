@@ -259,6 +259,102 @@ public class CajaRepository : ICajaRepository
             .Select(ConvertirADto)
             .ToList();
     }
+    // =====================================================
+    // OBTENER DETALLE DE UNA CAJA
+    // =====================================================
+
+    public async Task<CajaDetalleDto?> ObtenerDetalleAsync(
+        long idCaja
+    )
+    {
+        var caja =
+            await _context.Cajas
+                .AsNoTracking()
+                .Include(c => c.UsuarioApertura)
+                .Include(c => c.UsuarioCierre)
+                .FirstOrDefaultAsync(
+                    c => c.IdCaja == idCaja
+                );
+
+        if (caja == null)
+            return null;
+
+        var movimientos =
+            await _context.MovimientosCaja
+                .AsNoTracking()
+                .Where(
+                    m =>
+                        m.IdCaja == idCaja
+                )
+                .OrderByDescending(
+                    m => m.FechaMovimiento
+                )
+                .ToListAsync();
+
+        var totalIngresos =
+            movimientos
+                .Where(
+                    m =>
+                        m.TipoMovimiento ==
+                        "INGRESO"
+                )
+                .Sum(
+                    m => m.Monto
+                );
+
+        var totalEgresos =
+            movimientos
+                .Where(
+                    m =>
+                        m.TipoMovimiento ==
+                        "EGRESO"
+                )
+                .Sum(
+                    m => m.Monto
+                );
+
+        var movimientosDto =
+            movimientos
+                .Select(
+                    m =>
+                        new MovimientoCajaDto
+                        {
+                            IdMovimientoCaja =
+                                m.IdMovimientoCaja,
+
+                            IdCaja =
+                                m.IdCaja,
+
+                            TipoMovimiento =
+                                m.TipoMovimiento,
+
+                            Descripcion =
+                                m.Descripcion,
+
+                            Monto =
+                                m.Monto,
+
+                            FechaMovimiento =
+                                m.FechaMovimiento
+                        }
+                )
+                .ToList();
+
+        return new CajaDetalleDto
+        {
+            Caja =
+                ConvertirADto(caja),
+
+            TotalIngresos =
+                totalIngresos,
+
+            TotalEgresos =
+                totalEgresos,
+
+            Movimientos =
+                movimientosDto
+        };
+    }
 
     // =====================================================
     // CALCULAR EFECTIVO ESPERADO
